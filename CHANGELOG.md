@@ -1,5 +1,15 @@
 # Change Log
 
+## v2.10.0 [2025-11-26]
+
+- ✨ Integrated Dafny
+- ✨ Added Dafny Language Support (LSP)
+
+## v2.9.1-2 [2025-11-21]
+
+- 🐛 Fixed serialization issues on SMT diff (related to separate processes) (for timeouts)
+- 🐛 Fixed runing smt model iteration with timeout
+
 ## v2.9.0 [2025-11-18]
 
 - ✨ Added Alloy Language Support (LSP)
