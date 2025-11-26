@@ -100,5 +100,11 @@
             "title": "Larger Examples",
             "link": "https://smlab.cs.tau.ac.il/syntech/examples/index.html"
         }
+    ],
+    "dfy": [
+        {
+            "title": "Dafny Reference Manual",
+            "link": "https://dafny.org/latest/DafnyRef/DafnyRef"
+        }
     ]
 }
