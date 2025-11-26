@@ -15,7 +15,7 @@ if [[ "$OSTYPE" != "linux-gnu"* ]]; then
     exit 1
 fi
 
-echo "Step 1: Installing gVisor (runsc)..."
+echo "Installing gVisor (runsc)..."
 
 # Detect architecture
 ARCH=$(uname -m)
@@ -45,7 +45,7 @@ else
 fi
 
 echo ""
-echo "Step 2: Configuring Docker to use gVisor runtime..."
+echo "Configuring Docker to use gVisor runtime..."
 
 # Configure Docker daemon
 DOCKER_CONFIG="/etc/docker/daemon.json"
@@ -72,45 +72,15 @@ else
     fi
 fi
 
-# Restart Docker
-echo "Restarting Docker..."
-sudo systemctl restart docker
-sleep 2
-echo -e "${GREEN}✓ Docker configured${NC}"
-
 echo ""
-echo "Step 3: Building Dafny gVisor image..."
-docker build -t dafny-gvisor -f Dockerfile.gvisor .
-echo -e "${GREEN}✓ Image built${NC}"
-
-echo ""
-echo "Step 4: Testing gVisor runtime..."
+echo "Testing gVisor runtime..."
 if docker run --rm --runtime=runsc hello-world > /dev/null 2>&1; then
     echo -e "${GREEN}✓ gVisor runtime working${NC}"
 else
     echo -e "${RED}❌ gVisor runtime test failed${NC}"
+    echo "Please ensure Docker is configured correctly and restart the Docker daemon."
     exit 1
 fi
 
 echo ""
-echo "Step 5: Installing Python dependencies..."
-poetry install
-echo -e "${GREEN}✓ Dependencies installed${NC}"
-
-echo ""
-echo "Step 6: Creating .env file..."
-cat > .env << 'EOF'
-API_URL=http://localhost:8080/
-USE_GVISOR=true
-EOF
-echo -e "${GREEN}✓ .env file created${NC}"
-
-echo ""
 echo -e "${GREEN}✅ Setup complete!${NC}"
-echo ""
-echo "To start the server:"
-echo "  poetry run uvicorn main:app --reload --host 0.0.0.0 --port 8080"
-echo ""
-echo "Test with:"
-echo '  curl -X POST http://localhost:8080/verify -H "Content-Type: application/json" -d '"'"'{"code": "method Main() { print \"Hello!\"; }"}'"'"''
-echo ""
