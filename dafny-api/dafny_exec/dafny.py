@@ -41,7 +41,7 @@ def run_in_gvisor(code: str) -> str:
             "--runtime=runsc",  # gVisor runtime for sandboxing
             "--memory=2g",  # Increased memory for C# compilation
             "--memory-swap=2g",  # Prevent swap usage
-            "--cpus=1",  # Increased CPU limit
+            "--cpus=1",
             "--pids-limit=100",  # Increased process limit for compilation
             "-v",
             f"{tmpdir}:/input:ro",  # Mount code as read-only
@@ -49,7 +49,10 @@ def run_in_gvisor(code: str) -> str:
             "/tmp:rw,exec,size=500m",  # Larger tmpfs for compilation artifacts
         ]
 
-        docker_args.extend(["dafny-gvisor", "sh", "-c", dafny_cmd])  # Image name
+        # Allow configuring the image via environment variable so remote images
+        image_name = os.getenv("DAFNY_GVISOR_IMAGE", "dafny-gvisor:latest")
+
+        docker_args.extend([image_name, "sh", "-c", dafny_cmd])  # Image name
 
         try:
             result = subprocess.run(
@@ -104,13 +107,6 @@ def verify_dafny(code: str) -> str:
 def translate_dafny(code: str, permalink: str, target_language: str) -> str:
     """
     Translate Dafny code to target language and return path to zip file.
-
-    Output structure by language:
-    - py: directory (fedora-kosher-defuse-kosher-py/)
-    - cs: files (fedora-kosher-defuse-kosher.cs, fedora-kosher-defuse-kosher-cs.dtr)
-    - java: directory (fedora-kosher-defuse-kosher-java/)
-    - go: directory (fedora-kosher-defuse-kosher-go/)
-    - js: files (fedora-kosher-defuse-kosher.js, fedora-kosher-defuse-kosher-js.dtr)
     """
     tmp_dir = tempfile.gettempdir()
     dfy_path = os.path.join(tmp_dir, permalink + ".dfy")
