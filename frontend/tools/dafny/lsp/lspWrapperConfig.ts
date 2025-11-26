@@ -10,14 +10,21 @@ import { createDafnyWebSocketWorker } from './dafnyWebSocketClient';
 import dafnyLanguageConfig from './dafny-configuration.json?raw';
 import dafnyGrammar from './dafny-grammar.json?raw';
 
+// Build WebSocket URL dynamically based on current host
+function getDafnyLspUrl(): string {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    return `${protocol}//${host}/lsp-dafny/lsp`;
+}
+
 export const createDafnyLspConfig = async (): Promise<WrapperConfig> => {
     // Load the extension files for Dafny
     const dafnyExtensionFilesOrContents = new Map<string, string | URL>();
     dafnyExtensionFilesOrContents.set(`/dafny-configuration.json`, dafnyLanguageConfig);
     dafnyExtensionFilesOrContents.set(`/dafny-grammar.json`, dafnyGrammar);
 
-    // Create Dafny WebSocket worker
-    const dafnyWorker = createDafnyWebSocketWorker('ws://localhost:5173/lsp-dafny/lsp');
+    // Create Dafny WebSocket worker with dynamic URL
+    const dafnyWorker = createDafnyWebSocketWorker(getDafnyLspUrl());
 
     // Wait a bit to check if connection fails
     await new Promise(resolve => setTimeout(resolve, 500));

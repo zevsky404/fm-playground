@@ -58,6 +58,13 @@ export class WebSocketToMessagePortAdapter {
     }
 }
 
+// Build WebSocket URL dynamically based on current host
+function getDefaultLspUrl(): string {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    return `${protocol}//${host}/lsp-dafny/lsp`;
+}
+
 // Create a fake worker that encapsulates the WebSocket connection
 export class DafnyWebSocketWorker {
     private websocket: WebSocket;
@@ -67,7 +74,7 @@ export class DafnyWebSocketWorker {
     private connectedPort: MessagePort | null = null;
     private connectionTimeout: NodeJS.Timeout | null = null;
 
-    constructor(url: string = 'ws://localhost:5173/lsp-dafny/lsp') {
+    constructor(url: string = getDefaultLspUrl()) {
         this.websocket = new WebSocket(url);
         this.setupWebSocket();
         
@@ -164,7 +171,7 @@ export class DafnyWebSocketWorker {
     }
 }
 
-export function createDafnyMessageTransports(url: string = 'ws://localhost:5173/lsp-dafny/lsp') {
+export function createDafnyMessageTransports(url: string = getDefaultLspUrl()) {
     const adapter = new WebSocketToMessagePortAdapter(url);
     const messagePort = adapter.getMessagePort();
 
@@ -174,6 +181,6 @@ export function createDafnyMessageTransports(url: string = 'ws://localhost:5173/
     return { reader, writer, adapter };
 }
 
-export function createDafnyWebSocketWorker(url: string = 'ws://localhost:5173/lsp-dafny/lsp') {
+export function createDafnyWebSocketWorker(url: string = getDefaultLspUrl()) {
     return new DafnyWebSocketWorker(url);
 }
