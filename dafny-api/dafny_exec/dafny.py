@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import shutil
 import zipfile
+import uuid
 
 
 def run_in_gvisor(code: str) -> str:
@@ -41,8 +42,8 @@ def run_in_gvisor(code: str) -> str:
             "--runtime=runsc",  # gVisor runtime for sandboxing
             "--memory=2g",  # Increased memory for C# compilation
             "--memory-swap=2g",  # Prevent swap usage
-            "--cpus=1",
-            "--pids-limit=100",  # Increased process limit for compilation
+            "--cpus=0",  # Limit to single CPU
+            "--pids-limit=200",  # Increased process limit for compilation
             "-v",
             f"{tmpdir}:/input:ro",  # Mount code as read-only
             "--tmpfs",
@@ -54,14 +55,30 @@ def run_in_gvisor(code: str) -> str:
 
         docker_args.extend([image_name, "sh", "-c", dafny_cmd])  # Image name
 
+        # Generate a unique container name so we can kill it on timeout
+        container_name = f"dafny-exec-{uuid.uuid4().hex[:8]}"
+        docker_args.insert(3, "--name")
+        docker_args.insert(4, container_name)
+
         try:
             result = subprocess.run(
-                docker_args, capture_output=True, text=True, timeout=30
+                docker_args, capture_output=True, text=True, timeout=60  # Increased timeout for gVisor overhead
             )
             return result.stdout + result.stderr
         except subprocess.TimeoutExpired:
-            return "Execution timeout"
+            # Kill the container that's still running
+            try:
+                subprocess.run(["docker", "kill", container_name], capture_output=True, timeout=5)
+                subprocess.run(["docker", "rm", "-f", container_name], capture_output=True, timeout=5)
+            except Exception:
+                pass
+            return "Execution timeout (container killed)"
         except Exception as e:
+            # Ensure container cleanup on any error
+            try:
+                subprocess.run(["docker", "rm", "-f", container_name], capture_output=True, timeout=5)
+            except Exception:
+                pass
             return f"Error: {str(e)}"
     finally:
         try:
