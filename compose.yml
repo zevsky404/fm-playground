@@ -169,7 +169,6 @@ services:
       - .env
     restart: unless-stopped
     environment:
-      USE_GVISOR: "true"
       API_URL: ${API_URL:-http://fmp-backend:8000/}
     networks:
       - my_network
