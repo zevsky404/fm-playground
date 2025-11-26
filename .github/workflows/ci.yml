@@ -19,7 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: [alloy-api, backend, frontend, limboole-api, nuxmv-api, spectra-api, z3-api, limboole-diff-api, smt-diff-api] 
+        folder:
+          [
+            alloy-api,
+            backend,
+            frontend,
+            limboole-api,
+            nuxmv-api,
+            spectra-api,
+            z3-api,
+            limboole-diff-api,
+            smt-diff-api,
+            dafny-api,
+            dafny-lsp-proxy,
+          ]
         include:
           - folder: alloy-api
             image_name: ghcr.io/${{ github.repository }}-alloy-api
@@ -39,6 +52,10 @@ jobs:
             image_name: ghcr.io/${{ github.repository }}-limboole-diff-api
           - folder: smt-diff-api
             image_name: ghcr.io/${{ github.repository }}-smt-diff-api
+          - folder: dafny-api
+            image_name: ghcr.io/${{ github.repository }}-dafny-api
+          - folder: dafny-lsp-proxy
+            image_name: ghcr.io/${{ github.repository }}-dafny-lsp-proxy
 
     steps:
       - name: Checkout repository
@@ -65,7 +82,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
-      
+
       - name: Extract VITE_FMP_VERSION
         id: extract_version
         run: |
