@@ -1,9 +1,11 @@
 import { saveCodeAndRefreshHistory } from '@/utils/codeExecutionUtils';
 import { fmpConfig } from '@/ToolMaps';
+import { getLineToHighlight } from '@/../tools/common/lineHighlightingUtil';
 import {
     editorValueAtom,
     jotaiStore,
     languageAtom,
+    lineToHighlightAtom,
     permalinkAtom,
     isExecutingAtom,
     outputAtom,
@@ -96,11 +98,38 @@ export const executeDafnyTool = async () => {
         // Extract the value from the CLI option object
         const cliOptionValue = typeof dafnyCliOption === 'string' ? dafnyCliOption : dafnyCliOption.value;
         const res = await executeDafny(response?.data, cliOptionValue);
+        jotaiStore.set(lineToHighlightAtom, getLineToHighlight(res, language.id) || []);
         jotaiStore.set(outputAtom, res);
     } catch (err: any) {
+        // Extract error detail from server response
+        let serverDetailRaw = err?.response?.data ?? err?.message ?? String(err);
+        let serverDetail: string;
+
+        try {
+            if (serverDetailRaw instanceof Blob) {
+                // Blob response (e.g., from translate endpoint with responseType: 'blob')
+                serverDetail = await serverDetailRaw.text();
+                // Parse JSON if the blob contains JSON
+                try {
+                    const parsed = JSON.parse(serverDetail);
+                    serverDetail = parsed?.detail ?? serverDetail;
+                } catch {
+                    // Not JSON, use as-is
+                }
+            } else if (typeof serverDetailRaw === 'object') {
+                // Object response like { detail: '...' }
+                serverDetail = serverDetailRaw?.detail ?? JSON.stringify(serverDetailRaw, null, 2);
+            } else {
+                serverDetail = String(serverDetailRaw);
+            }
+        } catch {
+            serverDetail = String(serverDetailRaw);
+        }
+
+        jotaiStore.set(lineToHighlightAtom, getLineToHighlight(serverDetail, language.id) || []);
         jotaiStore.set(
             outputAtom,
-            `${err.message}. If the problem persists, open an <a href="${fmpConfig.issues}" target="_blank">issue</a>`
+            `${serverDetail}. If the problem persists, open an <a href="${fmpConfig.issues}" target="_blank">issue</a>`
         );
     }
     jotaiStore.set(isExecutingAtom, false);
