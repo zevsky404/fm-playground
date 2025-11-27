@@ -106,7 +106,9 @@ def code(check: str, p: str):
         return run_dafny(code)
     except Exception as e:
         log_to_db(p, json.dumps({"/dfy/run/ - error": str(e)}))
-        raise HTTPException(status_code=500, detail="Error running code")
+        # Include the exception message (which may contain Dafny stdout/stderr)
+        error_detail = f"Error running code: {str(e)}"
+        raise HTTPException(status_code=500, detail=error_detail)
 
 
 @app.get("/dfy/translate/{target_language}", response_model=None)
@@ -141,5 +143,5 @@ def translate_to_python(check: str, p: str, target_language: str):
         cleanup_translation_files_sync(zip_path, p, target_language)
         log_to_db(p, json.dumps({"/dfy/translate/ - error": str(e)}))
 
-        error_detail = f"Error translating code: {str(e)}\n{traceback.format_exc()}"
+        error_detail = f"Error translating code: {str(e)}"
         raise HTTPException(status_code=500, detail=str(e))

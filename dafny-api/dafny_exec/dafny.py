@@ -100,8 +100,9 @@ def run_dafny(code: str) -> str:
     try:
         command = ["dafny", "run", tmp_file.name]
         result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+        out = (result.stdout or "") + (result.stderr or "")
         os.remove(tmp_file.name)
-        return result.stdout
+        return out
     except subprocess.TimeoutExpired:
         os.remove(tmp_file.name)
         return "Timeout expired"
@@ -114,8 +115,9 @@ def verify_dafny(code: str) -> str:
     try:
         command = ["dafny", "verify", tmp_file.name]
         result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+        out = (result.stdout or "") + (result.stderr or "")
         os.remove(tmp_file.name)
-        return result.stdout
+        return out
     except subprocess.TimeoutExpired:
         os.remove(tmp_file.name)
         return "Timeout expired"
@@ -138,7 +140,9 @@ def translate_dafny(code: str, permalink: str, target_language: str) -> str:
         result = subprocess.run(command, capture_output=True, text=True, timeout=30)
 
         if result.returncode != 0:
-            raise Exception(f"Dafny translation failed: {result.stderr}")
+            # Include both stdout and stderr so the frontend can display detailed errors
+            out = (result.stdout or "") + (result.stderr or "")
+            raise Exception(out)
 
         # Determine what files/directories were created
         zip_path = os.path.join(tmp_dir, f"{permalink}-{target_language}.zip")
