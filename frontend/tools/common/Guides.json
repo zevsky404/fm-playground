@@ -105,6 +105,10 @@
         {
             "title": "Dafny Reference Manual",
             "link": "https://dafny.org/latest/DafnyRef/DafnyRef"
+        },
+        {
+            "title": "Dafny Example Swap Method",
+            "link": "https://play.formal-methods.net/?check=DFY&p=rut-embark-regain-rascal"
         }
     ]
 }

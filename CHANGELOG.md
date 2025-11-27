@@ -1,5 +1,11 @@
 # Change Log
 
+## v2.10.0 [2025-11-27]
+
+- 🐛 Fixed production url for socket connection for Dafny LSP
+- ⚙️ Better error handling for Dafny execution and translation
+- ⚙️ Increased the CPU limit for Dafny execution in the backend
+
 ## v2.10.0 [2025-11-26]
 
 - ✨ Integrated Dafny
