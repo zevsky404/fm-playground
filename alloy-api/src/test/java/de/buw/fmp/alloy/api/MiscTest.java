@@ -12,6 +12,7 @@ import edu.mit.csail.sdg.translator.TranslateAlloyToKodkod;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 public class MiscTest {
@@ -27,7 +28,8 @@ public class MiscTest {
     System.out.println(instance.format(0));
     // create temp file
     String tempFile = Files.createTempFile("alloy", ".als").toAbsolutePath().toString();
-    instance.writeXML(tempFile);
+    // Pass empty list to work around Alloy 6.2.0 bug where null extraSkolems causes NPE
+    instance.writeXML(tempFile, Collections.emptyList());
     System.out.println("XML written to: " + tempFile);
     XMLNode x = new XMLNode(new File(tempFile));
     A4Solution sol = A4SolutionReader.read(m.getAllReachableSigs(), x);
