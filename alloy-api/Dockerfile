@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 WORKDIR /app
 COPY . /app
 
-RUN apt-get update && apt-get install -y bash openjdk-17-jdk && \
+RUN apt-get update && apt-get install -y bash openjdk-21-jdk curl socat && \
 	sed -i -e 's/\r$//' gradlew entrypoint.sh && \
 	chmod +x gradlew entrypoint.sh && \
 	./gradlew spotlessApply && \
