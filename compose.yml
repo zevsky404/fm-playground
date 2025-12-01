@@ -54,7 +54,7 @@ services:
       - my_network
     restart: unless-stopped
 
-  z3:
+  smt-z3:
     build:
       context: ./z3-api
       dockerfile: Dockerfile
@@ -111,8 +111,8 @@ services:
     environment:
       API_URL: http://fmp-backend:8000/
       REDIS_URL: redis://redis:6379/0
-    depends_on:
-      - redis
+    depends_on:   # Remove if you don't use redis
+      - redis   
     networks:
       - my_network
 
@@ -124,7 +124,7 @@ services:
     environment:
       API_URL: http://fmp-backend:8000/
       REDIS_URL: redis://redis:6379/0
-    depends_on:
+    depends_on:   # Remove if you don't use redis
       - redis
     networks:
       - my_network
@@ -137,7 +137,7 @@ services:
     environment:
       API_URL: http://fmp-backend:8000/
       REDIS_URL: redis://redis:6379/0
-    depends_on:
+    depends_on:  # Remove if you don't use redis
       - redis
     networks:
       - my_network
