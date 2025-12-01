@@ -88,6 +88,12 @@ def run_z3(code: str, check_redundancy: bool = False) -> str:
             raise HTTPException(status_code=500, detail="Error running z3: " + str(e))
 
 
+## ------------------------- API Endpoints ------------------------- ##
+
+@app.get("/health")
+def health():
+    return {"status": "UP"}
+
 @app.get("/smt/run/", response_model=None)
 def execute_z3(check: str, p: str):
     code = get_code_by_permalink(check, p)
