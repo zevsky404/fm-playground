@@ -8,7 +8,7 @@
   <hr>
 </div>
 
-A web-based platform for formal methods tools, providing an easy-to-use interface for model checking, formal verification, and synthesis. Currently, Limboole, Z3, nuXmv, Alloy, and Spectra are integrated into the platform. Due to the modular architecture, more tools can be added easily. 
+A web-based platform for formal methods tools, providing an easy-to-use interface for model checking, formal verification, and synthesis. Currently, Limboole, Z3, nuXmv, Alloy, dafny, and Spectra are integrated into the platform. Due to the modular architecture, more tools can be added easily.
 
 ## Overview and Examples
 
@@ -68,8 +68,6 @@ docker compose up -d
 
 TODO: Create a contributing guide
 
-Contributions are welcome! Please refer to the [contributing guidelines](CONTRIBUTING.md) for detailed instructions.
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
@@ -80,4 +78,5 @@ This project is licensed under the [MIT License](LICENSE).
 - Z3 - https://github.com/Z3Prover/z3/blob/master/LICENSE.txt
 - nuXmv - https://nuxmv.fbk.eu/downloads/LICENSE.txt
 - Alloy - https://github.com/AlloyTools/org.alloytools.alloy/blob/master/LICENSE
+- Dafny - https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt
 - Spectra - https://github.com/SpectraSynthesizer/spectra-synt/blob/master/LICENSE
