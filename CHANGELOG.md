@@ -1,5 +1,13 @@
 # Change Log
 
+## v2.11.0[2025-12-01]
+
+- ⬆️ Upgraded Alloy to version 6.2.0
+- ⚡️ Using minisat for Alloy backend
+- 🐛 Fixed alloy grammar ambiguity
+- 🐛 Fixed production URL for socket connection for Dafny LSP
+- ⚙️ Better error handling for Dafny execution and translation
+
 ## v2.10.0 [2025-11-27]
 
 - 🐛 Fixed production url for socket connection for Dafny LSP

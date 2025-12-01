@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fmp-backend"
-version = "2.10.2"
+version = "2.11.0"
 description = "Flask Backend for FM Playground"
 authors = ["Soaibuzzaman <soaibuzzaman@uni-weimar.de>"]
 license = "MIT"
