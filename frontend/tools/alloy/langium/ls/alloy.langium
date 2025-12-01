@@ -6,7 +6,7 @@ entry AlloyModule:
     ModuleDecl? import+=Import* paragraph+=Paragraph*;
 
 ModuleDecl:
-    'module' qualName=ModulePath ('[' params+=ModuleParam (',' params+=ModuleParam)* ']')?; 
+    'module' qualName=ModulePath ('[' params+=ModuleParam (',' params+=ModuleParam)* ']')?;
 
 ModuleParam:
     exactly?='exactly'? name=ID;
@@ -26,7 +26,7 @@ SigDecl:
 
 AdditionalSig:
     name=ID;
-    
+
 SigExt:
     keyword=('extends' | 'in') parent=QualName ('+' additionalParents+=QualName)*;
 
@@ -44,7 +44,7 @@ PredDecl:
 
 FunDecl:
     'fun' (qualifier=QualName '.')? name=ID paraDecls=ParaDecls? ':' 
-    (mult=MULT? first=Expr second=Expr | retType=Expr '{' body=Expr '}');
+    (mult=MULT | multSet='set')? retType=ReturnTypeExpr '{' body=Expr '}';
 
 ParaDecls:
     '(' (decls+=Decl (',' decls+=Decl)*)? ')' | '[' (decls+=Decl (',' decls+=Decl)*)? ']';
@@ -69,6 +69,11 @@ TypeScope:
 
 Expr:
     SequenceExpr;
+
+// Return type expression - used in FunDecl to avoid ambiguity with multiplicity keywords
+// This skips UnaryMultExpr since mult keywords (lone, some, one, set) are handled separately
+ReturnTypeExpr infers Expr:
+    ComparisonExpr;
 
 SequenceExpr infers Expr:
     DisjunctionExpr ({infer SequenceExpr.left=current} ';' right=DisjunctionExpr)*;
@@ -151,8 +156,8 @@ PrimaryExpr infers Expr:
     | ({infer SumExpr} 'sum' decls+=Decl (',' decls+=Decl)* '|' expr=Expr)  
     | ({infer LetExpr} 'let' decls+=LetDecl (',' decls+=LetDecl)* blockOrBar=BlockOrBar)  
     | ({infer MetaExpr} qualName=QualName '$')  
-    | STRING  
-    ;
+    | STRING
+;
 
 
 QualName:
@@ -185,9 +190,11 @@ BlockOrBar:
 CompareOp returns string:
     'in' | '=' | '<' | '>' | '=<' | '>=';
 
-QUANT returns string: 'all' | 'no' | 'sum' | 'some' | 'lone' | 'one';
+QUANT returns string:
+    'all' | 'no' | 'sum' | 'some' | 'lone' | 'one';
 
-MULT returns string: 'lone' | 'some' | 'one';
+MULT returns string:
+    'lone' | 'some' | 'one';
 
 terminal PRIME: "'";
 hidden terminal WS: /\s+/;

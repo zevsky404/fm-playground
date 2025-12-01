@@ -465,14 +465,13 @@ export function isFieldDecl(item: unknown): item is FieldDecl {
 export interface FunDecl extends AstNode {
     readonly $container: AlloyModule;
     readonly $type: 'FunDecl';
-    body?: Expr;
-    first?: Expr;
+    body: Expr;
     mult?: MULT;
+    multSet?: 'set';
     name: string;
     paraDecls?: ParaDecls;
     qualifier?: QualName;
-    retType?: Expr;
-    second?: Expr;
+    retType: Expr;
 }
 
 export const FunDecl = 'FunDecl';
@@ -1247,13 +1246,12 @@ export class AlloyAstReflection extends AbstractAstReflection {
                     name: FunDecl,
                     properties: [
                         { name: 'body' },
-                        { name: 'first' },
                         { name: 'mult' },
+                        { name: 'multSet' },
                         { name: 'name' },
                         { name: 'paraDecls' },
                         { name: 'qualifier' },
-                        { name: 'retType' },
-                        { name: 'second' }
+                        { name: 'retType' }
                     ]
                 };
             }
