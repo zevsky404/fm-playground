@@ -68,9 +68,21 @@ const AlloyEvaluator: React.FC<AlloyEvaluatorProps> = ({
                         borderRadius: '8px',
                         height: height,
                         whiteSpace: 'pre-wrap',
+                        marginBottom: '5px',
                     }}
                     dangerouslySetInnerHTML={{ __html: evaluatorOutput }}
                 />
+                <div
+                    style={{
+                        marginBottom: '5px',
+                        fontSize: '0.85em',
+                        color: 'var(--secondary-text-color)',
+                        fontStyle: 'italic',
+                        textAlign: 'center',
+                    }}
+                >
+                    ⚠️ Based on the last loaded instance.
+                </div>
             </div>
         </>
     );

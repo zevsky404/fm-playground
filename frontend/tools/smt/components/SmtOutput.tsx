@@ -5,7 +5,7 @@ import { smtModelAtom, outputPreviewHeightAtom, outputAtom } from '@/atoms';
 import { getNextSmtModel } from '../smtIterateModels';
 import { jotaiStore, permalinkAtom } from '@/atoms';
 import { logToDb } from '@/api/playgroundApi';
-import { smtCliOptionsAtom, isDarkThemeAtom } from '@/atoms';
+import { smtCliOptionsAtom } from '@/atoms';
 
 const SmtOutput = () => {
     const [smtModel, setSmtModel] = useAtom(smtModelAtom);
@@ -21,7 +21,6 @@ const SmtOutput = () => {
     const [hasModel, setHasModel] = useState(false);
     const [isModelIterationMode, setIsModelIterationMode] = useState(false); // Track if this is model iteration mode
     const [smtCheckOption] = useAtom(smtCliOptionsAtom);
-    const [isDarkTheme] = useAtom(isDarkThemeAtom);
 
     //Update the model in the state when the API response is received
     useEffect(() => {
@@ -217,7 +216,7 @@ const SmtOutput = () => {
                                         style={{
                                             marginBottom: '5px',
                                             fontSize: '0.85em',
-                                            color: isDarkTheme ? '#ffffffff' : '#3b3b3bff',
+                                            color: 'var(--secondary-text-color)',
                                             fontStyle: 'italic',
                                             textAlign: 'center',
                                         }}

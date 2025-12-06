@@ -45,6 +45,7 @@
     cursor: pointer;
     color: #333333;
     background: transparent;
+    border: none;
 }
 
 .alloy-eval-close-icon:hover {
@@ -59,4 +60,8 @@
     border-radius: 8px;
     white-space: pre-wrap;
     font-size: 1em;
+}
+
+.form-outline .form-control~.form-label {
+    color: var(--primary-text-color);
 }
