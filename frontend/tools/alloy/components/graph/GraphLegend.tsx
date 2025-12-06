@@ -10,12 +10,7 @@ interface GraphLegendProps {
     activeRelationship?: string | null;
 }
 
-const GraphLegend: React.FC<GraphLegendProps> = ({
-    items,
-    onItemHover,
-    onItemLeave,
-    activeRelationship,
-}) => {
+const GraphLegend: React.FC<GraphLegendProps> = ({ items, onItemHover, onItemLeave, activeRelationship }) => {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
         const saved = localStorage.getItem(LEGEND_COLLAPSED_KEY);
         return saved === 'true';

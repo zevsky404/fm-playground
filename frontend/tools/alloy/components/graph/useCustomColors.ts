@@ -47,89 +47,107 @@ export const useCustomColors = () => {
         }
     }, []);
 
-    const setNodeColor = useCallback((nodeId: string, color: string) => {
-        setCustomColors((prev) => {
-            const newNodes = new Map(prev.nodes || []);
-            newNodes.set(nodeId, color);
-            const newColors: CustomColors = {
-                nodes: newNodes,
-                nodeTypes: prev.nodeTypes || new Map(),
-                relationships: prev.relationships || new Map(),
-            };
-            saveToStorage(newColors);
-            return newColors;
-        });
-    }, [saveToStorage]);
+    const setNodeColor = useCallback(
+        (nodeId: string, color: string) => {
+            setCustomColors((prev) => {
+                const newNodes = new Map(prev.nodes || []);
+                newNodes.set(nodeId, color);
+                const newColors: CustomColors = {
+                    nodes: newNodes,
+                    nodeTypes: prev.nodeTypes || new Map(),
+                    relationships: prev.relationships || new Map(),
+                };
+                saveToStorage(newColors);
+                return newColors;
+            });
+        },
+        [saveToStorage]
+    );
 
-    const setNodeTypeColor = useCallback((nodeType: string, color: string) => {
-        setCustomColors((prev) => {
-            const newNodeTypes = new Map(prev.nodeTypes || []);
-            newNodeTypes.set(nodeType, color);
-            const newColors: CustomColors = {
-                nodes: prev.nodes || new Map(),
-                nodeTypes: newNodeTypes,
-                relationships: prev.relationships || new Map(),
-            };
-            saveToStorage(newColors);
-            return newColors;
-        });
-    }, [saveToStorage]);
+    const setNodeTypeColor = useCallback(
+        (nodeType: string, color: string) => {
+            setCustomColors((prev) => {
+                const newNodeTypes = new Map(prev.nodeTypes || []);
+                newNodeTypes.set(nodeType, color);
+                const newColors: CustomColors = {
+                    nodes: prev.nodes || new Map(),
+                    nodeTypes: newNodeTypes,
+                    relationships: prev.relationships || new Map(),
+                };
+                saveToStorage(newColors);
+                return newColors;
+            });
+        },
+        [saveToStorage]
+    );
 
-    const setRelationshipColor = useCallback((relationship: string, color: string) => {
-        setCustomColors((prev) => {
-            const newRelationships = new Map(prev.relationships || []);
-            newRelationships.set(relationship, color);
-            const newColors: CustomColors = {
-                nodes: prev.nodes || new Map(),
-                nodeTypes: prev.nodeTypes || new Map(),
-                relationships: newRelationships,
-            };
-            saveToStorage(newColors);
-            return newColors;
-        });
-    }, [saveToStorage]);
+    const setRelationshipColor = useCallback(
+        (relationship: string, color: string) => {
+            setCustomColors((prev) => {
+                const newRelationships = new Map(prev.relationships || []);
+                newRelationships.set(relationship, color);
+                const newColors: CustomColors = {
+                    nodes: prev.nodes || new Map(),
+                    nodeTypes: prev.nodeTypes || new Map(),
+                    relationships: newRelationships,
+                };
+                saveToStorage(newColors);
+                return newColors;
+            });
+        },
+        [saveToStorage]
+    );
 
-    const resetNodeColor = useCallback((nodeId: string) => {
-        setCustomColors((prev) => {
-            const newNodes = new Map(prev.nodes || []);
-            newNodes.delete(nodeId);
-            const newColors: CustomColors = {
-                nodes: newNodes,
-                nodeTypes: prev.nodeTypes || new Map(),
-                relationships: prev.relationships || new Map(),
-            };
-            saveToStorage(newColors);
-            return newColors;
-        });
-    }, [saveToStorage]);
+    const resetNodeColor = useCallback(
+        (nodeId: string) => {
+            setCustomColors((prev) => {
+                const newNodes = new Map(prev.nodes || []);
+                newNodes.delete(nodeId);
+                const newColors: CustomColors = {
+                    nodes: newNodes,
+                    nodeTypes: prev.nodeTypes || new Map(),
+                    relationships: prev.relationships || new Map(),
+                };
+                saveToStorage(newColors);
+                return newColors;
+            });
+        },
+        [saveToStorage]
+    );
 
-    const resetNodeTypeColor = useCallback((nodeType: string) => {
-        setCustomColors((prev) => {
-            const newNodeTypes = new Map(prev.nodeTypes || []);
-            newNodeTypes.delete(nodeType);
-            const newColors: CustomColors = {
-                nodes: prev.nodes || new Map(),
-                nodeTypes: newNodeTypes,
-                relationships: prev.relationships || new Map(),
-            };
-            saveToStorage(newColors);
-            return newColors;
-        });
-    }, [saveToStorage]);
+    const resetNodeTypeColor = useCallback(
+        (nodeType: string) => {
+            setCustomColors((prev) => {
+                const newNodeTypes = new Map(prev.nodeTypes || []);
+                newNodeTypes.delete(nodeType);
+                const newColors: CustomColors = {
+                    nodes: prev.nodes || new Map(),
+                    nodeTypes: newNodeTypes,
+                    relationships: prev.relationships || new Map(),
+                };
+                saveToStorage(newColors);
+                return newColors;
+            });
+        },
+        [saveToStorage]
+    );
 
-    const resetRelationshipColor = useCallback((relationship: string) => {
-        setCustomColors((prev) => {
-            const newRelationships = new Map(prev.relationships || []);
-            newRelationships.delete(relationship);
-            const newColors: CustomColors = {
-                nodes: prev.nodes || new Map(),
-                nodeTypes: prev.nodeTypes || new Map(),
-                relationships: newRelationships,
-            };
-            saveToStorage(newColors);
-            return newColors;
-        });
-    }, [saveToStorage]);
+    const resetRelationshipColor = useCallback(
+        (relationship: string) => {
+            setCustomColors((prev) => {
+                const newRelationships = new Map(prev.relationships || []);
+                newRelationships.delete(relationship);
+                const newColors: CustomColors = {
+                    nodes: prev.nodes || new Map(),
+                    nodeTypes: prev.nodeTypes || new Map(),
+                    relationships: newRelationships,
+                };
+                saveToStorage(newColors);
+                return newColors;
+            });
+        },
+        [saveToStorage]
+    );
 
     const resetAllColors = useCallback(() => {
         const emptyColors: CustomColors = {
@@ -141,21 +159,27 @@ export const useCustomColors = () => {
         localStorage.removeItem(CUSTOM_COLORS_KEY);
     }, []);
 
-    const getNodeColor = useCallback((nodeId: string, nodeType?: string): string | undefined => {
-        // Check individual node color first
-        if (customColors.nodes?.has(nodeId)) {
-            return customColors.nodes.get(nodeId);
-        }
-        // Then check node type color
-        if (nodeType && customColors.nodeTypes?.has(nodeType)) {
-            return customColors.nodeTypes.get(nodeType);
-        }
-        return undefined;
-    }, [customColors]);
+    const getNodeColor = useCallback(
+        (nodeId: string, nodeType?: string): string | undefined => {
+            // Check individual node color first
+            if (customColors.nodes?.has(nodeId)) {
+                return customColors.nodes.get(nodeId);
+            }
+            // Then check node type color
+            if (nodeType && customColors.nodeTypes?.has(nodeType)) {
+                return customColors.nodeTypes.get(nodeType);
+            }
+            return undefined;
+        },
+        [customColors]
+    );
 
-    const getRelationshipColor = useCallback((relationship: string): string | undefined => {
-        return customColors.relationships?.get(relationship);
-    }, [customColors]);
+    const getRelationshipColor = useCallback(
+        (relationship: string): string | undefined => {
+            return customColors.relationships?.get(relationship);
+        },
+        [customColors]
+    );
 
     return {
         customColors,

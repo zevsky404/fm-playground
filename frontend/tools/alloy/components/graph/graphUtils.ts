@@ -27,7 +27,7 @@ export const getUniqueRelationships = (elements: GraphElement[]): string[] => {
  */
 export const getRelationshipStats = (elements: GraphElement[]): RelationshipStats[] => {
     const counts = new Map<string, number>();
-    
+
     elements.forEach((element) => {
         const rel = element.data.relationship;
         if (rel) {
@@ -60,9 +60,6 @@ export const buildLegendItems = (elements: GraphElement[]): LegendItem[] => {
 /**
  * Get edges that match a specific relationship.
  */
-export const getEdgesByRelationship = (
-    cy: cytoscape.Core,
-    relationship: string
-): cytoscape.EdgeCollection => {
+export const getEdgesByRelationship = (cy: cytoscape.Core, relationship: string): cytoscape.EdgeCollection => {
     return cy.edges(`[relationship="${relationship}"]`);
 };

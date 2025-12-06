@@ -1,5 +1,12 @@
 import { type Module, inject } from 'langium';
-import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
+import {
+    createDefaultModule,
+    createDefaultSharedModule,
+    type DefaultSharedModuleContext,
+    type LangiumServices,
+    type LangiumSharedServices,
+    type PartialLangiumServices,
+} from 'langium/lsp';
 import { AlloyGeneratedModule, AlloyGeneratedSharedModule } from './generated/module.js';
 import { AlloyValidator, registerValidationChecks } from './alloy-validator.js';
 import { AlloyCompletionProvider } from './alloy-completion-provider.js';
@@ -10,15 +17,15 @@ import { AlloyScopeProvider } from './alloy-scope-provider.js';
  */
 export type AlloyAddedServices = {
     validation: {
-        AlloyValidator: AlloyValidator
-    }
-}
+        AlloyValidator: AlloyValidator;
+    };
+};
 
 /**
  * Union of Langium default services and your custom services - use this as constructor parameter
  * of custom service classes.
  */
-export type AlloyServices = LangiumServices & AlloyAddedServices
+export type AlloyServices = LangiumServices & AlloyAddedServices;
 
 /**
  * Dependency injection module that overrides Langium default services and contributes the
@@ -27,14 +34,14 @@ export type AlloyServices = LangiumServices & AlloyAddedServices
  */
 export const AlloyModule: Module<AlloyServices, PartialLangiumServices & AlloyAddedServices> = {
     validation: {
-        AlloyValidator: () => new AlloyValidator()
+        AlloyValidator: () => new AlloyValidator(),
     },
     references: {
-        ScopeProvider: (services) => new AlloyScopeProvider(services)
+        ScopeProvider: (services) => new AlloyScopeProvider(services),
     },
     lsp: {
-        CompletionProvider: (services) => new AlloyCompletionProvider(services)
-    }
+        CompletionProvider: (services) => new AlloyCompletionProvider(services),
+    },
 };
 
 /**
@@ -53,18 +60,11 @@ export const AlloyModule: Module<AlloyServices, PartialLangiumServices & AlloyAd
  * @returns An object wrapping the shared services and the language-specific services
  */
 export function createAlloyServices(context: DefaultSharedModuleContext): {
-    shared: LangiumSharedServices,
-    Alloy: AlloyServices
+    shared: LangiumSharedServices;
+    Alloy: AlloyServices;
 } {
-    const shared = inject(
-        createDefaultSharedModule(context),
-        AlloyGeneratedSharedModule
-    );
-    const Alloy = inject(
-        createDefaultModule({ shared }),
-        AlloyGeneratedModule,
-        AlloyModule
-    );
+    const shared = inject(createDefaultSharedModule(context), AlloyGeneratedSharedModule);
+    const Alloy = inject(createDefaultModule({ shared }), AlloyGeneratedModule, AlloyModule);
     shared.ServiceRegistry.register(Alloy);
     registerValidationChecks(Alloy);
     if (!context.connection) {

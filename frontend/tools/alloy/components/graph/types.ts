@@ -25,8 +25,8 @@ export interface RelationshipStats {
  * Custom colors for nodes and relationships.
  */
 export interface CustomColors {
-    nodes?: Map<string, string>;        // nodeId -> color
-    nodeTypes?: Map<string, string>;    // nodeType -> color
+    nodes?: Map<string, string>; // nodeId -> color
+    nodeTypes?: Map<string, string>; // nodeType -> color
     relationships?: Map<string, string>; // relationship -> color
 }
 

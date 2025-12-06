@@ -6,14 +6,13 @@ import { SigDecl } from './generated/ast.js';
  * Expands declarations like "sig A, B, C {}" into separate AST nodes.
  */
 export class AlloyAstProcessor {
-    
     /**
      * Post-process the AST to expand multi-name signatures.
      */
     processAst(root: AstNode): AstNode {
         return this.processNode(root);
     }
-    
+
     private processNode(node: AstNode): AstNode {
         // Process all children first (bottom-up)
         for (const [propertyName, value] of Object.entries(node)) {
@@ -37,22 +36,22 @@ export class AlloyAstProcessor {
                 (node as any)[propertyName] = this.processNode(value);
             }
         }
-        
+
         return node;
     }
-    
+
     private isSigDecl(node: AstNode): node is SigDecl {
         return node.$type === 'SigDecl';
     }
-    
+
     private isMultiNameSig(sig: SigDecl): boolean {
         return (sig as any).names && (sig as any).names.length > 1;
     }
-    
+
     private expandMultiNameSig(sig: SigDecl): SigDecl[] {
         const names = (sig as any).names as string[];
         const result: SigDecl[] = [];
-        
+
         for (const name of names) {
             // Create a new signature node for each name
             const newSig: any = {
@@ -63,12 +62,12 @@ export class AlloyAstProcessor {
                 fields: sig.fields,
                 block: sig.block,
                 name: name, // Single name property for cross-references
-                names: [name] // Keep original structure for compatibility
+                names: [name], // Keep original structure for compatibility
             };
-            
+
             result.push(newSig as SigDecl);
         }
-        
+
         return result;
     }
 }

@@ -10,7 +10,7 @@ import {
     alloySelectedCmdAtom,
     alloyInstanceAtom,
     outputAtom,
-    enableLspAtom
+    enableLspAtom,
 } from '@/atoms';
 import { Permalink } from '@/types';
 

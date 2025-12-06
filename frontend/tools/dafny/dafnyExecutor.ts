@@ -41,7 +41,7 @@ async function translateDafny(permalink: Permalink, targetLanguage: string) {
         const response = await axios.get(url, {
             responseType: 'blob', // Important for downloading files
         });
-        
+
         // Create a download link for the zip file
         const blob = new Blob([response.data], { type: 'application/zip' });
         const downloadUrl = window.URL.createObjectURL(blob);
@@ -52,7 +52,7 @@ async function translateDafny(permalink: Permalink, targetLanguage: string) {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(downloadUrl);
-        
+
         return `Translation to ${targetLanguage.toUpperCase()} completed successfully. Save the zip file or check your downloads folder for the zip file named ${permalink.permalink}-${targetLanguage}.zip`;
     } catch (error) {
         throw error;
@@ -80,9 +80,14 @@ export const executeDafnyTool = async () => {
     const permalink = jotaiStore.get(permalinkAtom);
     const dafnyCliOption = jotaiStore.get(dafnyCliOptionsAtom);
     const enableLsp = jotaiStore.get(enableLspAtom);
-    const metadata = {check: dafnyCliOption.value, ls: enableLsp };
-    
-    const response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, metadata);
+    const metadata = { check: dafnyCliOption.value, ls: enableLsp };
+
+    const response = await saveCodeAndRefreshHistory(
+        editorValue,
+        language.short,
+        permalink.permalink || null,
+        metadata
+    );
     if (response) {
         jotaiStore.set(permalinkAtom, response.data);
     } else {

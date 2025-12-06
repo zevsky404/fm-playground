@@ -99,11 +99,14 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
     }, []);
 
     // Handle legend item hover
-    const handleLegendHover = useCallback((relationship: string) => {
-        if (cyRef.current) {
-            highlightRelationship(cyRef.current, relationship);
-        }
-    }, [highlightRelationship]);
+    const handleLegendHover = useCallback(
+        (relationship: string) => {
+            if (cyRef.current) {
+                highlightRelationship(cyRef.current, relationship);
+            }
+        },
+        [highlightRelationship]
+    );
 
     const handleLegendLeave = useCallback(() => {
         if (cyRef.current) {
@@ -123,37 +126,43 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
     }, []);
 
     // Open color picker
-    const openColorPicker = useCallback((
-        x: number,
-        y: number,
-        targetType: 'node' | 'nodeType' | 'relationship',
-        targetId: string,
-        currentColor: string
-    ) => {
-        setColorPicker({
-            visible: true,
-            x: Math.min(x, window.innerWidth - 250),
-            y: Math.min(y, window.innerHeight - 300),
-            currentColor,
-            targetType,
-            targetId,
-        });
-    }, []);
+    const openColorPicker = useCallback(
+        (
+            x: number,
+            y: number,
+            targetType: 'node' | 'nodeType' | 'relationship',
+            targetId: string,
+            currentColor: string
+        ) => {
+            setColorPicker({
+                visible: true,
+                x: Math.min(x, window.innerWidth - 250),
+                y: Math.min(y, window.innerHeight - 300),
+                currentColor,
+                targetType,
+                targetId,
+            });
+        },
+        []
+    );
 
     // Handle color change from picker
-    const handleColorChange = useCallback((color: string) => {
-        switch (colorPicker.targetType) {
-            case 'node':
-                setNodeColor(colorPicker.targetId, color);
-                break;
-            case 'nodeType':
-                setNodeTypeColor(colorPicker.targetId, color);
-                break;
-            case 'relationship':
-                setRelationshipColor(colorPicker.targetId, color);
-                break;
-        }
-    }, [colorPicker, setNodeColor, setNodeTypeColor, setRelationshipColor]);
+    const handleColorChange = useCallback(
+        (color: string) => {
+            switch (colorPicker.targetType) {
+                case 'node':
+                    setNodeColor(colorPicker.targetId, color);
+                    break;
+                case 'nodeType':
+                    setNodeTypeColor(colorPicker.targetId, color);
+                    break;
+                case 'relationship':
+                    setRelationshipColor(colorPicker.targetId, color);
+                    break;
+            }
+        },
+        [colorPicker, setNodeColor, setNodeTypeColor, setRelationshipColor]
+    );
 
     // Build context menu items based on target
     const getContextMenuItems = useCallback((): ContextMenuItem[] => {
@@ -246,7 +255,7 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
 
             items.push({ label: '', onClick: () => {}, divider: true });
 
-            const hasCustomColors = 
+            const hasCustomColors =
                 (customColors.nodes?.size || 0) > 0 ||
                 (customColors.nodeTypes?.size || 0) > 0 ||
                 (customColors.relationships?.size || 0) > 0;
@@ -284,7 +293,7 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
             const rect = container?.getBoundingClientRect();
             const nodeId = node.id();
             const nodeType = node.data('nodeType') || extractNodeType(nodeId);
-            
+
             setContextMenu({
                 visible: true,
                 x: (rect?.left || 0) + position.x,
@@ -302,7 +311,7 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
             const position = e.renderedPosition || e.position;
             const container = cy.container();
             const rect = container?.getBoundingClientRect();
-            
+
             setContextMenu({
                 visible: true,
                 x: (rect?.left || 0) + position.x,
@@ -320,7 +329,7 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
                 const position = e.renderedPosition || e.position;
                 const container = cy.container();
                 const rect = container?.getBoundingClientRect();
-                
+
                 setContextMenu({
                     visible: true,
                     x: (rect?.left || 0) + position.x,
@@ -339,13 +348,13 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
     useEffect(() => {
         const uniqueRels = getUniqueRelationships(alloyVizGraph);
         const items = buildLegendItems(alloyVizGraph);
-        
+
         // Update legend items with custom colors
-        const updatedItems = items.map(item => ({
+        const updatedItems = items.map((item) => ({
             ...item,
             color: customColors.relationships?.get(item.relationship) || item.color,
         }));
-        
+
         setLegendItems(updatedItems);
         setStylesheet(createCytoscapeStylesheet(uniqueRels, customColors));
     }, [alloyVizGraph, customColors]);
@@ -353,7 +362,7 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
     // Run layout only when graph data changes (not when colors change)
     useEffect(() => {
         // Create a simple hash of the graph structure to detect actual data changes
-        const graphHash = JSON.stringify(alloyVizGraph.map(e => e.data.id).sort());
+        const graphHash = JSON.stringify(alloyVizGraph.map((e) => e.data.id).sort());
         const graphChanged = graphHash !== prevGraphRef.current;
         prevGraphRef.current = graphHash;
 
@@ -381,13 +390,13 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
 
                 // Fit the graph to viewport with padding
                 cyRef.current.fit(undefined, 50);
-                
+
                 isInitialMount.current = false;
             }
 
             // Always setup interactions (they get cleared on re-render)
             setupInteractions(cyRef.current);
-            
+
             // Setup context menu
             setupContextMenu(cyRef.current);
         }
@@ -416,11 +425,7 @@ const AlloyCytoscapeGraph: React.FC<AlloyCytoscapeGraphProps> = ({ alloyVizGraph
                 onItemLeave={handleLegendLeave}
                 activeRelationship={activeRelationship}
             />
-            <GraphContextMenu
-                state={contextMenu}
-                onClose={closeContextMenu}
-                items={getContextMenuItems()}
-            />
+            <GraphContextMenu state={contextMenu} onClose={closeContextMenu} items={getContextMenuItems()} />
             {colorPicker.visible && (
                 <ColorPicker
                     currentColor={colorPicker.currentColor}

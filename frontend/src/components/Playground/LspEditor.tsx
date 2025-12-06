@@ -373,12 +373,7 @@ const LspEditor: React.FC<LspEditorProps> = (props) => {
 
     // If LSP failed, fall back to basic editor
     if (lspFailed) {
-        return (
-            <Editor
-                height={props.height}
-                editorTheme={props.editorTheme || 'vs-dark'}
-            />
-        );
+        return <Editor height={props.height} editorTheme={props.editorTheme || 'vs-dark'} />;
     }
 
     return (

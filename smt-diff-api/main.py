@@ -81,9 +81,11 @@ class SmtDiffResponse(BaseModel):
 
 # --------------------------------------------------
 
+
 @app.get("/health")
 def health():
     return {"status": "UP"}
+
 
 @app.get("/run/", response_model=SmtDiffResponse)
 async def run_smt_diff(check: str, p: str, analysis: str, filter: str = ""):

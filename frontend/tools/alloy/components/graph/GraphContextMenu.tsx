@@ -15,11 +15,7 @@ interface GraphContextMenuProps {
     items: ContextMenuItem[];
 }
 
-const GraphContextMenu: React.FC<GraphContextMenuProps> = ({
-    state,
-    onClose,
-    items,
-}) => {
+const GraphContextMenu: React.FC<GraphContextMenuProps> = ({ state, onClose, items }) => {
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -119,11 +115,7 @@ const GraphContextMenu: React.FC<GraphContextMenuProps> = ({
                             e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                     >
-                        {item.icon && (
-                            <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>
-                                {item.icon}
-                            </span>
-                        )}
+                        {item.icon && <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>{item.icon}</span>}
                         <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {item.label}
                         </span>

@@ -23,20 +23,20 @@ const generateColorFromHash = (str: string): string => {
         let hash = 0;
         for (let i = 0; i < s.length; i++) {
             const char = s.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
+            hash = (hash << 5) - hash + char;
             hash = hash & hash;
         }
         return Math.abs(hash);
     };
 
     const hash = hashCode(str);
-    
+
     // Generate HSL color for better distribution
     // Use golden ratio for hue distribution
     const hue = (hash * 137.508) % 360;
     const saturation = 65 + (hash % 20); // 65-85%
-    const lightness = 45 + (hash % 15);  // 45-60%
-    
+    const lightness = 45 + (hash % 15); // 45-60%
+
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 };
 

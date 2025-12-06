@@ -4,10 +4,12 @@ import os
 import queue
 import subprocess
 import tempfile
+
+from dotenv import load_dotenv
 from smt_redundancy.redundancy import unsat_core
 from utils.helper import get_logic_from_smt2, prettify_warning
 from z3 import *
-from dotenv import load_dotenv
+
 load_dotenv()
 
 MAX_CONCURRENT_REQUESTS = 10
@@ -76,7 +78,9 @@ def _run_z3_with_redundancy_worker(result_queue, code: str):
         try:
             solver = SolverFor(logic) if logic else Solver()
             solver.from_string(code)
-            redundant_lines = list(unsat_core(solver, solver.assertions(), smt2_file=code))
+            redundant_lines = list(
+                unsat_core(solver, solver.assertions(), smt2_file=code)
+            )
         except Exception:
             redundant_lines = []
         if logic is None:

@@ -77,7 +77,7 @@ export class DafnyWebSocketWorker {
     constructor(url: string = getDefaultLspUrl()) {
         this.websocket = new WebSocket(url);
         this.setupWebSocket();
-        
+
         // Set connection timeout (5 seconds)
         this.connectionTimeout = setTimeout(() => {
             if (!this.isConnected) {
@@ -92,7 +92,7 @@ export class DafnyWebSocketWorker {
         this.websocket.onopen = () => {
             this.isConnected = true;
             this.connectionFailed = false;
-            
+
             if (this.connectionTimeout) {
                 clearTimeout(this.connectionTimeout);
                 this.connectionTimeout = null;
@@ -100,7 +100,7 @@ export class DafnyWebSocketWorker {
 
             // Send any pending messages
             if (this.connectedPort && this.pendingMessages.length > 0) {
-                this.pendingMessages.forEach(msg => {
+                this.pendingMessages.forEach((msg) => {
                     this.websocket.send(JSON.stringify(msg));
                 });
                 this.pendingMessages = [];
@@ -144,7 +144,6 @@ export class DafnyWebSocketWorker {
 
             // Listen for messages from the language client
             data.port.onmessage = (event: MessageEvent) => {
-
                 if (this.isConnected) {
                     this.websocket.send(JSON.stringify(event.data));
                 } else {

@@ -53,7 +53,7 @@ function getLinesToHighlightDafny(result: string) {
     const lines: number[] = [];
 
     // Match patterns like: filename.dfy(14,2): Error: ...
-    const regexLineCol = /\((\d+),\d+\):\s*Error/ig;
+    const regexLineCol = /\((\d+),\d+\):\s*Error/gi;
     let match: RegExpExecArray | null;
     while ((match = regexLineCol.exec(result)) !== null) {
         const n = parseInt(match[1], 10);
@@ -61,7 +61,7 @@ function getLinesToHighlightDafny(result: string) {
     }
 
     // Match patterns like: filename.dfy(14): Error: ...
-    const regexLineOnly = /\((\d+)\):\s*Error/ig;
+    const regexLineOnly = /\((\d+)\):\s*Error/gi;
     while ((match = regexLineOnly.exec(result)) !== null) {
         const n = parseInt(match[1], 10);
         if (!isNaN(n)) lines.push(n);

@@ -412,11 +412,11 @@ async function executeZ3() {
     try {
         const res = await fetchZ3Result(response?.data);
 
-    // Handle new response format from backend
-    // Backend returns: { result: string, redundant_lines: array }
-    // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
-    const result: string = (res.result ?? res[0]) ?? '';
-    const redundantLines: any[] = (res.redundant_lines ?? res[1]) ?? [];
+        // Handle new response format from backend
+        // Backend returns: { result: string, redundant_lines: array }
+        // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
+        const result: string = res.result ?? res[0] ?? '';
+        const redundantLines: any[] = res.redundant_lines ?? res[1] ?? [];
 
         if (result.includes('(error')) {
             jotaiStore.set(outputAtom, result);

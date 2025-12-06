@@ -3,13 +3,13 @@ import * as monaco from 'monaco-editor';
 const dafnyConf: monaco.languages.LanguageConfiguration = {
     comments: {
         lineComment: '//',
-        blockComment: ['/*', '*/']
+        blockComment: ['/*', '*/'],
     },
     brackets: [
         ['{', '}'],
         ['[', ']'],
         ['(', ')'],
-        ['<', '>']
+        ['<', '>'],
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
@@ -17,52 +17,165 @@ const dafnyConf: monaco.languages.LanguageConfiguration = {
         { open: '(', close: ')' },
         { open: '<', close: '>' },
         { open: '"', close: '"', notIn: ['string'] },
-        { open: '/*', close: ' */', notIn: ['string'] }
+        { open: '/*', close: ' */', notIn: ['string'] },
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '<', close: '>' },
-        { open: '"', close: '"' }
+        { open: '"', close: '"' },
     ],
     folding: {
         markers: {
             start: new RegExp('^\\s*//\\s*#?region\\b'),
-            end: new RegExp('^\\s*//\\s*#?endregion\\b')
-        }
-    }
+            end: new RegExp('^\\s*//\\s*#?endregion\\b'),
+        },
+    },
 };
 
 const dafnyLang: monaco.languages.IMonarchLanguage = {
     keywords: [
-        'abstract', 'allocated', 'as', 'assert', 'assume', 
-        'break', 'by', 'calc', 'case', 'class', 'codatatype', 
-        'const', 'constructor', 'continue', 'datatype', 'decreases', 
-        'downto', 'else', 'ensures', 'exists', 'expect', 'export', 
-        'extends', 'false', 'for', 'forall', 'fresh', 'function', 
-        'ghost', 'greatest', 'if', 'import', 'in', 'include', 
-        'invariant', 'is', 'iterator', 'label', 'least', 'lemma', 
-        'match', 'method', 'modify', 'modifies', 'module', 'nameonly', 
-        'new', 'newtype', 'null', 'old', 'opaque', 'opened', 
-        'predicate', 'print', 'provides', 'reads', 'refines', 
-        'requires', 'return', 'returns', 'reveal', 'reveals', 
-        'static', 'then', 'this', 'to', 'trait', 'true', 
-        'twostate', 'type', 'unchanged', 'var', 'while', 
-        'witness', 'yield', 'yields'
+        'abstract',
+        'allocated',
+        'as',
+        'assert',
+        'assume',
+        'break',
+        'by',
+        'calc',
+        'case',
+        'class',
+        'codatatype',
+        'const',
+        'constructor',
+        'continue',
+        'datatype',
+        'decreases',
+        'downto',
+        'else',
+        'ensures',
+        'exists',
+        'expect',
+        'export',
+        'extends',
+        'false',
+        'for',
+        'forall',
+        'fresh',
+        'function',
+        'ghost',
+        'greatest',
+        'if',
+        'import',
+        'in',
+        'include',
+        'invariant',
+        'is',
+        'iterator',
+        'label',
+        'least',
+        'lemma',
+        'match',
+        'method',
+        'modify',
+        'modifies',
+        'module',
+        'nameonly',
+        'new',
+        'newtype',
+        'null',
+        'old',
+        'opaque',
+        'opened',
+        'predicate',
+        'print',
+        'provides',
+        'reads',
+        'refines',
+        'requires',
+        'return',
+        'returns',
+        'reveal',
+        'reveals',
+        'static',
+        'then',
+        'this',
+        'to',
+        'trait',
+        'true',
+        'twostate',
+        'type',
+        'unchanged',
+        'var',
+        'while',
+        'witness',
+        'yield',
+        'yields',
     ],
 
     typeKeywords: [
-        'bool', 'char', 'real', 'multiset', 'map', 'imap', 
-        'nat', 'int', 'ORDINAL', 'object', 'string', 'set', 
-        'iset', 'seq', 'array', 'bv0'
+        'bool',
+        'char',
+        'real',
+        'multiset',
+        'map',
+        'imap',
+        'nat',
+        'int',
+        'ORDINAL',
+        'object',
+        'string',
+        'set',
+        'iset',
+        'seq',
+        'array',
+        'bv0',
     ],
 
     operators: [
-        '=', '>', '<', '!', '~', '?', ':', '==', '<=', '>=', '!=',
-        '&&', '||', '++', '--', '+', '-', '*', '/', '&', '|', '^', '%',
-        '<<', '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=', '^=',
-        '%=', '<<=', '>>=', '>>>=', ':=', ':|', '<==', '==>', '<==>'
+        '=',
+        '>',
+        '<',
+        '!',
+        '~',
+        '?',
+        ':',
+        '==',
+        '<=',
+        '>=',
+        '!=',
+        '&&',
+        '||',
+        '++',
+        '--',
+        '+',
+        '-',
+        '*',
+        '/',
+        '&',
+        '|',
+        '^',
+        '%',
+        '<<',
+        '>>',
+        '>>>',
+        '+=',
+        '-=',
+        '*=',
+        '/=',
+        '&=',
+        '|=',
+        '^=',
+        '%=',
+        '<<=',
+        '>>=',
+        '>>>=',
+        ':=',
+        ':|',
+        '<==',
+        '==>',
+        '<==>',
     ],
 
     symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -72,7 +185,7 @@ const dafnyLang: monaco.languages.IMonarchLanguage = {
         root: [
             // whitespace
             [/[ \t\r\n]+/, ''],
-            
+
             // comments
             [/\/\/.*$/, 'comment'],
             [/\/\*/, 'comment', '@comment'],
@@ -96,51 +209,57 @@ const dafnyLang: monaco.languages.IMonarchLanguage = {
             [/\{:[a-zA-Z_]\w*/, 'annotation', '@attributeBrace'],
 
             // keywords and identifiers
-            [/[a-zA-Z_][\w'?]*/, {
-                cases: {
-                    '@typeKeywords': 'keyword.type',
-                    '@keywords': 'keyword',
-                    '@default': 'identifier'
-                }
-            }],
+            [
+                /[a-zA-Z_][\w'?]*/,
+                {
+                    cases: {
+                        '@typeKeywords': 'keyword.type',
+                        '@keywords': 'keyword',
+                        '@default': 'identifier',
+                    },
+                },
+            ],
 
             // delimiters and operators
             [/[{}()\[\]]/, '@brackets'],
             [/[<>](?!@symbols)/, '@brackets'],
-            [/@symbols/, {
-                cases: {
-                    '@operators': 'operator',
-                    '@default': ''
-                }
-            }],
-            [/[;,.]/, 'delimiter']
+            [
+                /@symbols/,
+                {
+                    cases: {
+                        '@operators': 'operator',
+                        '@default': '',
+                    },
+                },
+            ],
+            [/[;,.]/, 'delimiter'],
         ],
 
         comment: [
             [/[^\/*]+/, 'comment'],
             [/\/\*/, 'comment', '@push'],
             [/\*\//, 'comment', '@pop'],
-            [/[\/*]/, 'comment']
+            [/[\/*]/, 'comment'],
         ],
 
         string: [
             [/[^\\"]+/, 'string'],
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
-            [/"/, 'string', '@pop']
+            [/"/, 'string', '@pop'],
         ],
 
         stringMultiline: [
             [/[^"]+/, 'string'],
             [/""/, 'string.escape'],
-            [/"/, 'string', '@pop']
+            [/"/, 'string', '@pop'],
         ],
 
         attributeBrace: [
             [/[^}]+/, 'annotation'],
-            [/\}/, 'annotation', '@pop']
-        ]
-    }
+            [/\}/, 'annotation', '@pop'],
+        ],
+    },
 };
 
 export { dafnyConf, dafnyLang };

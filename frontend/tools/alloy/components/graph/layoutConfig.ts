@@ -8,19 +8,19 @@ let extensionsRegistered = false;
 
 export const registerCytoscapeExtensions = () => {
     if (extensionsRegistered) return;
-    
+
     try {
         cytoscape.use(dagre);
     } catch (e) {
         console.warn('Failed to register cytoscape-dagre:', e);
     }
-    
+
     try {
         cytoscape.use(cise);
     } catch (e) {
         console.warn('Failed to register cytoscape-cise:', e);
     }
-    
+
     extensionsRegistered = true;
 };
 
@@ -142,7 +142,7 @@ export const saveLayoutPreference = (layoutName: LayoutName): void => {
 
 export const loadLayoutPreference = (): LayoutName => {
     const saved = localStorage.getItem(LAYOUT_STORAGE_KEY);
-    if (saved && LAYOUT_OPTIONS.some(opt => opt.name === saved)) {
+    if (saved && LAYOUT_OPTIONS.some((opt) => opt.name === saved)) {
         return saved as LayoutName;
     }
     // Clear invalid saved preference

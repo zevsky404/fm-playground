@@ -27,8 +27,8 @@ export const createDafnyLspConfig = async (): Promise<WrapperConfig> => {
     const dafnyWorker = createDafnyWebSocketWorker(getDafnyLspUrl());
 
     // Wait a bit to check if connection fails
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     if (dafnyWorker.isConnectionFailed()) {
         console.warn('Dafny LSP connection failed, LSP features will not be available');
         dafnyWorker.terminate();

@@ -34,7 +34,7 @@ const languageConfigMap: Record<string, LanguageConfig | null> = {
     DFY: {
         configCreator: createDafnyConfig,
         languageId: 'dafny',
-    }
+    },
 };
 
 export const createDynamicLspConfig = async (languageShort: string): Promise<WrapperConfig | null> => {

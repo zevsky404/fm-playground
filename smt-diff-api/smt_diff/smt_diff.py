@@ -222,19 +222,26 @@ def _run_semantic_relation_with_timeout(s1, s2, timeout=DEFAULT_TIMEOUT):
         return prettify_error("No result returned from semantic relation computation")
 
 
-def diff_witness(assertions1, assertions2, logic1=None, logic2=None, filter: str = "", timeout_ms: int = None):
+def diff_witness(
+    assertions1,
+    assertions2,
+    logic1=None,
+    logic2=None,
+    filter: str = "",
+    timeout_ms: int = None,
+):
     """
     Compute diff witnesses between two specifications.
-    
+
     timeout_ms: Timeout in milliseconds for Z3 solver operations. If None, no timeout is set.
     """
     logic = common_logic(logic1, logic2)
     solver_s1_not_s2 = SolverFor(logic) if logic else Solver()
-    
+
     # Set timeout on the solver itself (in milliseconds)
     if timeout_ms is not None:
         solver_s1_not_s2.set("timeout", timeout_ms)
-    
+
     solver_s1_not_s2.add(And(assertions1), And(Not(And(assertions2))))
     if filter:
         combined_assertions = list(assertions1) + list(assertions2)
@@ -245,13 +252,13 @@ def diff_witness(assertions1, assertions2, logic1=None, logic2=None, filter: str
             solver_s1_not_s2.add(filter_assertions)
         except Exception as e:
             return prettify_error(f"Error parsing filter: {e.args[0].decode()}")
-    
+
     check_result = solver_s1_not_s2.check()
     if check_result == unknown:
         return prettify_error("Solver returned unknown (possibly timed out)")
     if check_result != sat:
         return "No diff witnesses found (unsat/unknown)."
-    
+
     vars_s1 = get_all_vars(assertions1)
     vars_s2 = get_all_vars(assertions2)
     vars_for_enum = list(vars_s1.intersection(vars_s2))
@@ -265,20 +272,25 @@ def diff_witness(assertions1, assertions2, logic1=None, logic2=None, filter: str
 
 
 def common_witness(
-    assertions1, assertions2, logic1=None, logic2=None, filter: str = "", timeout_ms: int = None
+    assertions1,
+    assertions2,
+    logic1=None,
+    logic2=None,
+    filter: str = "",
+    timeout_ms: int = None,
 ):
     """
     Compute common witnesses between two specifications.
-    
+
     timeout_ms: Timeout in milliseconds for Z3 solver operations. If None, no timeout is set.
     """
     logic = common_logic(logic1, logic2)
     combined_solver = SolverFor(logic) if logic else Solver()
-    
+
     # Set timeout on the solver itself (in milliseconds)
     if timeout_ms is not None:
         combined_solver.set("timeout", timeout_ms)
-    
+
     combined_solver.add(assertions1)
     combined_solver.add(assertions2)
     if filter:
@@ -290,13 +302,13 @@ def common_witness(
             combined_solver.add(filter_assertions)
         except Exception as e:
             return prettify_error(f"Error parsing filter: {e.args[0].decode()}")
-    
+
     check_result = combined_solver.check()
     if check_result == unknown:
         return prettify_error("Solver returned unknown (possibly timed out)")
     if check_result != sat:
         return "No diff witnesses found (unsat/unknown)."
-    
+
     s1_vars = get_all_vars(assertions1)
     s2_vars = get_all_vars(assertions2)
     all_vars = list(s1_vars.intersection(s2_vars))
@@ -379,11 +391,17 @@ def store_witness(
     # Create generator with timeout set on the solver
     try:
         if analysis == "not-previous-but-current":
-            witness = diff_witness(assertions2, assertions1, logic2, logic1, filter, timeout_ms)
+            witness = diff_witness(
+                assertions2, assertions1, logic2, logic1, filter, timeout_ms
+            )
         elif analysis == "not-current-but-previous":
-            witness = diff_witness(assertions1, assertions2, logic1, logic2, filter, timeout_ms)
+            witness = diff_witness(
+                assertions1, assertions2, logic1, logic2, filter, timeout_ms
+            )
         elif analysis == "common-witness":
-            witness = common_witness(assertions1, assertions2, logic1, logic2, filter, timeout_ms)
+            witness = common_witness(
+                assertions1, assertions2, logic1, logic2, filter, timeout_ms
+            )
         else:
             witness = prettify_error(f"Unknown analysis type: {analysis}")
     except Exception as e:

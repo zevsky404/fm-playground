@@ -49,24 +49,30 @@ export const useGraphInteractions = (options: UseGraphInteractionsOptions = {}) 
     /**
      * Highlight all edges of a specific relationship type.
      */
-    const highlightRelationship = useCallback((cy: cytoscape.Core, relationship: string) => {
-        const edges = getEdgesByRelationship(cy, relationship);
-        const connectedNodes = edges.connectedNodes();
+    const highlightRelationship = useCallback(
+        (cy: cytoscape.Core, relationship: string) => {
+            const edges = getEdgesByRelationship(cy, relationship);
+            const connectedNodes = edges.connectedNodes();
 
-        cy.elements().addClass('dimmed');
-        edges.removeClass('dimmed').addClass('highlighted');
-        connectedNodes.removeClass('dimmed').addClass('highlighted');
+            cy.elements().addClass('dimmed');
+            edges.removeClass('dimmed').addClass('highlighted');
+            connectedNodes.removeClass('dimmed').addClass('highlighted');
 
-        onRelationshipHover?.(relationship);
-    }, [onRelationshipHover]);
+            onRelationshipHover?.(relationship);
+        },
+        [onRelationshipHover]
+    );
 
     /**
      * Clear all highlights.
      */
-    const clearHighlights = useCallback((cy: cytoscape.Core) => {
-        cy.elements().removeClass('dimmed highlighted');
-        onRelationshipHover?.(null);
-    }, [onRelationshipHover]);
+    const clearHighlights = useCallback(
+        (cy: cytoscape.Core) => {
+            cy.elements().removeClass('dimmed highlighted');
+            onRelationshipHover?.(null);
+        },
+        [onRelationshipHover]
+    );
 
     return {
         setupInteractions,

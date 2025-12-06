@@ -13,17 +13,17 @@ import edu.mit.csail.sdg.translator.A4Options;
 import edu.mit.csail.sdg.translator.A4Solution;
 import edu.mit.csail.sdg.translator.A4SolutionReader;
 import edu.mit.csail.sdg.translator.TranslateAlloyToKodkod;
-import kodkod.engine.satlab.SATFactory;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import kodkod.engine.satlab.SATFactory;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,22 +107,23 @@ public class AlloyInstanceController {
     if (cmd == 0 && hasDefaultCommand(module)) {
       // Create a "run" command keyword for the default command
       ExprVar runKeyword = ExprVar.make(Pos.UNKNOWN, "run");
-      runCommand = new Command(
-          Pos.UNKNOWN,
-          ExprConstant.TRUE,
-          "FMPlayDefault",
-          false,
-          4,
-          4,
-          4,
-          -1,
-          -1,
-          -1,
-          null,
-          null,
-          runKeyword,
-          runCommand.formula,
-          null);
+      runCommand =
+          new Command(
+              Pos.UNKNOWN,
+              ExprConstant.TRUE,
+              "FMPlayDefault",
+              false,
+              4,
+              4,
+              4,
+              -1,
+              -1,
+              -1,
+              null,
+              null,
+              runKeyword,
+              runCommand.formula,
+              null);
     }
 
     A4Options options = getOptions();
@@ -131,15 +132,16 @@ public class AlloyInstanceController {
     // SafeList<Sig> sigs = module.getAllSigs();
     try {
       Command finalRunCommand = runCommand;
-      instance = runTimed(
-          new InstanceRunner() {
-            @Override
-            public A4Solution runInstance() {
-              return TranslateAlloyToKodkod.execute_command(
-                  A4Reporter.NOP, finalModule.getAllReachableSigs(), finalRunCommand, options);
-            }
-          },
-          TIME_OUT);
+      instance =
+          runTimed(
+              new InstanceRunner() {
+                @Override
+                public A4Solution runInstance() {
+                  return TranslateAlloyToKodkod.execute_command(
+                      A4Reporter.NOP, finalModule.getAllReachableSigs(), finalRunCommand, options);
+                }
+              },
+              TIME_OUT);
     } catch (Throwable t) {
       // return error message as JSON with http status code 400
       JSONObject obj = new JSONObject();
@@ -163,8 +165,7 @@ public class AlloyInstanceController {
   /**
    * Format the instance in tabular form
    *
-   * <p>
-   * In case of temporal instance, it will format the instance for each state
+   * <p>In case of temporal instance, it will format the instance for each state
    *
    * @param instance
    * @return
@@ -221,14 +222,15 @@ public class AlloyInstanceController {
 
     try {
       final A4Solution finalInstance = instance;
-      instance = runTimed(
-          new InstanceRunner() {
-            @Override
-            public A4Solution runInstance() {
-              return finalInstance.next();
-            }
-          },
-          TIME_OUT);
+      instance =
+          runTimed(
+              new InstanceRunner() {
+                @Override
+                public A4Solution runInstance() {
+                  return finalInstance.next();
+                }
+              },
+              TIME_OUT);
     } catch (Throwable t) {
       JSONObject obj = new JSONObject();
       String message = t.getMessage();
@@ -243,8 +245,7 @@ public class AlloyInstanceController {
   }
 
   /**
-   * Convert the instance to a JSON response that contains a JSON encoding, the
-   * specId, the tabular
+   * Convert the instance to a JSON response that contains a JSON encoding, the specId, the tabular
    * instance and the instance as text
    *
    * @param specId
@@ -273,8 +274,9 @@ public class AlloyInstanceController {
     // replace instance by a the serialized and then deserialized instance (there is
     // a bug in the
     // tabular instance printing otherwise)
-    instance = A4SolutionReader.read(
-        instance.getAllReachableSigs(), new XMLNode(new File(tmpFile.getAbsolutePath())));
+    instance =
+        A4SolutionReader.read(
+            instance.getAllReachableSigs(), new XMLNode(new File(tmpFile.getAbsolutePath())));
 
     xmlJSONObj.append("specId", specId);
     String tabularInstance = formatTabularInstance(instance);
@@ -290,11 +292,9 @@ public class AlloyInstanceController {
    * Evaluates an Alloy expression on a given specification instance.
    *
    * @param specId The ID of the specification instance to evaluate.
-   * @param expr   The Alloy expression to evaluate.
-   * @param state  The state of the solution to evaluate the expression on
-   *               (default is 0).
-   * @return A JSON string containing the result of the evaluation or an error
-   *         message.
+   * @param expr The Alloy expression to evaluate.
+   * @param state The state of the solution to evaluate the expression on (default is 0).
+   * @return A JSON string containing the result of the evaluation or an error message.
    * @throws IOException If an input or output exception occurs.
    */
   @CrossOrigin(origins = "*")
@@ -332,9 +332,7 @@ public class AlloyInstanceController {
   /**
    * Parses an Alloy expression from a string.
    *
-   * <p>
-   * This method uses reflection to temporarily extend the globals of the module
-   * with the atoms
+   * <p>This method uses reflection to temporarily extend the globals of the module with the atoms
    * from the stored solution.
    *
    * @param expr

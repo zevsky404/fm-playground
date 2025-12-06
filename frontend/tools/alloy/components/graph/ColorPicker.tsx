@@ -31,12 +31,7 @@ interface ColorPickerProps {
     position: { x: number; y: number };
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({
-    currentColor,
-    onColorChange,
-    onClose,
-    position,
-}) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ currentColor, onColorChange, onClose, position }) => {
     const [customColor, setCustomColor] = useState(currentColor);
     const pickerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -63,10 +58,13 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         };
     }, [onClose]);
 
-    const handlePresetClick = useCallback((color: string) => {
-        onColorChange(color);
-        onClose();
-    }, [onColorChange, onClose]);
+    const handlePresetClick = useCallback(
+        (color: string) => {
+            onColorChange(color);
+            onClose();
+        },
+        [onColorChange, onClose]
+    );
 
     const handleCustomColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const color = e.target.value;
@@ -150,7 +148,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <input
                     ref={inputRef}
-                    type="color"
+                    type='color'
                     value={customColor}
                     onChange={handleCustomColorChange}
                     style={{
@@ -163,7 +161,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                     }}
                 />
                 <input
-                    type="text"
+                    type='text'
                     value={customColor}
                     onChange={(e) => setCustomColor(e.target.value)}
                     style={{
@@ -174,7 +172,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                         fontSize: 12,
                         fontFamily: 'monospace',
                     }}
-                    placeholder="#RRGGBB"
+                    placeholder='#RRGGBB'
                 />
                 <button
                     onClick={handleCustomColorApply}

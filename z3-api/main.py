@@ -90,9 +90,11 @@ def run_z3(code: str, check_redundancy: bool = False) -> str:
 
 ## ------------------------- API Endpoints ------------------------- ##
 
+
 @app.get("/health")
 def health():
     return {"status": "UP"}
+
 
 @app.get("/smt/run/", response_model=None)
 def execute_z3(check: str, p: str):

@@ -31,7 +31,7 @@ export const createCytoscapeStylesheet = (
                 'text-wrap': 'wrap',
                 'text-max-width': '100px',
                 label: 'data(label)',
-                color: '#333333', 
+                color: '#333333',
                 'font-size': 14,
                 'font-weight': 'bold',
                 'border-width': 1,
@@ -143,8 +143,7 @@ export const createCytoscapeStylesheet = (
 
     // Add relationship-specific edge styles with distinct colors
     uniqueRelationships.forEach((relationship, index) => {
-        const color = customColors?.relationships?.get(relationship) 
-            || getColorForRelationship(relationship, index);
+        const color = customColors?.relationships?.get(relationship) || getColorForRelationship(relationship, index);
         styles.push({
             selector: `edge[relationship="${relationship}"]`,
             style: {

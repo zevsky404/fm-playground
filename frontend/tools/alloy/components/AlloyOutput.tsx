@@ -418,16 +418,16 @@ const AlloyOutput = () => {
                             </div>
                         )}
                         <div
-                    style={{
-                        marginBottom: '5px',
-                        fontSize: '0.85em',
-                        color: 'var(--secondary-text-color)',
-                        fontStyle: 'italic',
-                        textAlign: 'center',
-                    }}
-                >
-                    ✨ New: Context Menu. Right-click on viz to explore.
-                </div>
+                            style={{
+                                marginBottom: '5px',
+                                fontSize: '0.85em',
+                                color: 'var(--secondary-text-color)',
+                                fontStyle: 'italic',
+                                textAlign: 'center',
+                            }}
+                        >
+                            ✨ New: Context Menu. Right-click on viz to explore.
+                        </div>
                     </div>
                 </div>
             ) : (

@@ -115,11 +115,11 @@ const SmtOutput = () => {
             })
             .catch((error: any) => {
                 console.error('Error fetching next model:', error);
-                
+
                 // Check if it's a timeout error
                 const errorDetail = error?.response?.data?.detail || error?.message || '';
                 const isTimeout = errorDetail.includes('timed out') || errorDetail.includes('timeout');
-                
+
                 if (isTimeout) {
                     setIsLastModel(true);
                     setModelMessage('Computation of the next model timed out');
@@ -128,7 +128,7 @@ const SmtOutput = () => {
                     setIsLastModel(true);
                     setModelMessage('No more models');
                 }
-                
+
                 setIsNextModelExecuting(false);
             });
     };

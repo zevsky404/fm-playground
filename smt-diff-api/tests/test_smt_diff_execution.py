@@ -52,6 +52,7 @@ def test_store_witness():
     witness2 = next(generator).sexpr()
     assert witness1 != witness2
 
+
 def test_sort_diff():
     s1 = """
     (declare-sort User)
@@ -69,9 +70,9 @@ def test_sort_diff():
 
     generator = diff_witness(parse_smt2_string(s2), parse_smt2_string(s1))
 
-    User = DeclareSort('User')
-    is_admin = Function('is_admin', User, BoolSort())
-    Alice = Const('Alice', User)
+    User = DeclareSort("User")
+    is_admin = Function("is_admin", User, BoolSort())
+    Alice = Const("Alice", User)
 
     witness = next(generator).eval(is_admin(Alice))
     assert witness == False
