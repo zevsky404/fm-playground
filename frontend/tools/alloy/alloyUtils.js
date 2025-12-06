@@ -106,7 +106,7 @@ export function getGraphData(alloyInstance) {
                             nodes.add(targetLabel.replace('$', ''));
                             edges.push({
                                 data: {
-                                    id: `${sourceLabel}_${targetLabel}`,
+                                    id: `${sourceLabel}_${targetLabel}_${label}`,
                                     label: label,
                                     source: sourceLabel.replace('$', ''),
                                     target: targetLabel.replace('$', ''),
