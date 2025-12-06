@@ -23,6 +23,8 @@
     "@types/vscode": "^1.93.0",
     "axios": "^1.6.2",
     "cytoscape": "^3.29.2",
+    "cytoscape-cise": "^2.0.1",
+    "cytoscape-dagre": "^2.5.0",
     "jotai": "^2.12.5",
     "langium": "~3.2.0",
     "lodash": "^4.17.21",
@@ -46,6 +48,7 @@
     "z3-solver": "^4.12.2"
   },
   "devDependencies": {
+    "@types/cytoscape-dagre": "^2.3.4",
     "@types/lodash": "^4.17.9",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",

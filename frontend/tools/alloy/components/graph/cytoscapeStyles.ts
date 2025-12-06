@@ -1,38 +1,21 @@
-const COLOR_PALETTE = [
-    '#2196F3', // Blue
-    '#4CAF50', // Green
-    '#FF9800', // Orange
-    '#9C27B0', // Purple
-    '#F44336', // Red
-    '#00BCD4', // Cyan
-    '#E91E63', // Pink
-    '#795548', // Brown
-    '#607D8B', // Blue Grey
-    '#8BC34A', // Light Green
-    '#FF5722', // Deep Orange
-    '#3F51B5', // Indigo
-];
+import cytoscape from 'cytoscape';
+import { getColorForRelationship } from './colorUtils';
+import { CustomColors } from './types';
 
-const getColorForRelationship = (relationship: string, index: number): string => {
-    // Use index-based color assignment for consistent, visually distinct colors
-    return COLOR_PALETTE[index % COLOR_PALETTE.length];
-};
+// Default node color - yellowish like Alloy Analyzer
+export const DEFAULT_NODE_COLOR = '#E8C547';
+export const DEFAULT_NODE_BORDER_COLOR = '#C4A535';
+export const DEFAULT_NODE_HOVER_COLOR = '#D4B33D';
+export const DEFAULT_NODE_SELECTED_BORDER_COLOR = '#FF9800';
+export const DEFAULT_NODE_HIGHLIGHTED_COLOR = '#F0D060';
 
-const getCssVariable = (variable: string) => {
-    return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
-};
-
-// Export color mapping for legend
-export const getRelationshipColors = (uniqueRelationships: string[]): Map<string, string> => {
-    const colorMap = new Map<string, string>();
-    uniqueRelationships.forEach((rel, index) => {
-        colorMap.set(rel, getColorForRelationship(rel, index));
-    });
-    return colorMap;
-};
-
-const CytoscapeStylesheet = (uniqueRelationships: string[]) => {
-    const primaryTextColor = getCssVariable('--primary-text-color');
+/**
+ * Generate Cytoscape stylesheet for the graph.
+ */
+export const createCytoscapeStylesheet = (
+    uniqueRelationships: string[],
+    customColors?: CustomColors
+): cytoscape.StylesheetStyle[] => {
     const styles: any[] = [
         // Node base styles
         {
@@ -40,7 +23,7 @@ const CytoscapeStylesheet = (uniqueRelationships: string[]) => {
             style: {
                 width: 120,
                 height: 45,
-                'background-color': '#4A90D9',
+                'background-color': DEFAULT_NODE_COLOR,
                 'background-opacity': 0.95,
                 shape: 'roundrectangle',
                 'text-valign': 'center',
@@ -48,14 +31,14 @@ const CytoscapeStylesheet = (uniqueRelationships: string[]) => {
                 'text-wrap': 'wrap',
                 'text-max-width': '100px',
                 label: 'data(label)',
-                color: '#ffffff',
+                color: '#333333', 
                 'font-size': 14,
                 'font-weight': 'bold',
-                'border-width': 2,
-                'border-color': '#2E5A8A',
+                'border-width': 1,
+                'border-color': DEFAULT_NODE_BORDER_COLOR,
                 'border-opacity': 0.8,
                 'text-outline-width': 0,
-                'transition-property': 'background-color, border-color, border-width',
+                'transition-property': 'background-color, border-color, border-width, background-opacity',
                 'transition-duration': '0.2s',
             },
         },
@@ -63,27 +46,27 @@ const CytoscapeStylesheet = (uniqueRelationships: string[]) => {
         {
             selector: 'node:active',
             style: {
-                'background-color': '#3A7BC8',
-                'border-width': 3,
-                'border-color': '#1E3A5A',
+                'background-color': DEFAULT_NODE_HOVER_COLOR,
+                'border-width': 1,
+                'border-color': DEFAULT_NODE_BORDER_COLOR,
             },
         },
         // Node selected state
         {
             selector: 'node:selected',
             style: {
-                'background-color': '#2E5A8A',
-                'border-width': 3,
-                'border-color': '#FF9800',
+                'background-color': DEFAULT_NODE_HOVER_COLOR,
+                'border-width': 1,
+                'border-color': DEFAULT_NODE_SELECTED_BORDER_COLOR,
             },
         },
         // Highlighted nodes (connected to hovered element)
         {
             selector: 'node.highlighted',
             style: {
-                'background-color': '#5BA0E9',
-                'border-width': 3,
-                'border-color': '#FF9800',
+                'background-color': DEFAULT_NODE_HIGHLIGHTED_COLOR,
+                'border-width': 1,
+                'border-color': DEFAULT_NODE_SELECTED_BORDER_COLOR,
             },
         },
         // Dimmed nodes (not connected to hovered element)
@@ -106,15 +89,12 @@ const CytoscapeStylesheet = (uniqueRelationships: string[]) => {
                 'curve-style': 'bezier',
                 'control-point-step-size': 40,
                 label: 'data(label)',
-                color: primaryTextColor,
+                color: '#888888',
                 'text-rotation': 'autorotate',
-                'font-size': 12,
-                'font-weight': 'normal',
+                'font-size': 14,
+                'font-weight': 'bold',
                 'text-margin-y': -10,
-                'text-background-color': '#ffffff',
-                'text-background-opacity': 0.85,
-                'text-background-padding': '3px',
-                'text-background-shape': 'roundrectangle',
+                'text-background-opacity': 0,
                 'transition-property': 'line-color, target-arrow-color, width, opacity',
                 'transition-duration': '0.2s',
             },
@@ -163,17 +143,57 @@ const CytoscapeStylesheet = (uniqueRelationships: string[]) => {
 
     // Add relationship-specific edge styles with distinct colors
     uniqueRelationships.forEach((relationship, index) => {
-        const color = getColorForRelationship(relationship, index);
+        const color = customColors?.relationships?.get(relationship) 
+            || getColorForRelationship(relationship, index);
         styles.push({
             selector: `edge[relationship="${relationship}"]`,
             style: {
                 'line-color': color,
                 'target-arrow-color': color,
+                color: color, // Label color matches edge color
             },
         });
     });
 
-    return styles;
+    // Add custom node type colors if specified (before individual node colors so they can be overridden)
+    if (customColors?.nodeTypes) {
+        customColors.nodeTypes.forEach((color, nodeType) => {
+            styles.push({
+                selector: `node[nodeType="${nodeType}"]`,
+                style: {
+                    'background-color': color,
+                    'border-color': color,
+                },
+            });
+        });
+    }
+
+    // Add custom node colors if specified (after node type colors so they take precedence)
+    if (customColors?.nodes) {
+        customColors.nodes.forEach((color, nodeId) => {
+            styles.push({
+                selector: `node[id="${nodeId}"]`,
+                style: {
+                    'background-color': color,
+                    'border-color': color,
+                },
+            });
+        });
+    }
+
+    return styles as cytoscape.StylesheetStyle[];
 };
 
-export default CytoscapeStylesheet;
+/**
+ * Default layout options for the graph.
+ */
+export const defaultLayoutOptions = {
+    name: 'breadthfirst',
+    animate: true,
+    animationDuration: 500,
+    rankDir: 'TB',
+    nodeSep: 50,
+    rankSep: 100,
+    edgeSep: 10,
+    padding: 50,
+};
