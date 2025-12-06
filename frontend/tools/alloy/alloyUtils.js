@@ -139,7 +139,19 @@ export function getGraphData(alloyInstance) {
         }
     }
 
-    const nodeList = Array.from(nodes).map((node) => ({ data: { id: node, label: node } }));
+    // Extract node type from node ID (e.g., "Alice0" -> "Alice")
+    const extractNodeType = (nodeId) => {
+        const match = nodeId.match(/^(.+?)(\d*)$/);
+        return match && match[1] ? match[1] : nodeId;
+    };
+
+    const nodeList = Array.from(nodes).map((node) => ({
+        data: {
+            id: node,
+            label: node,
+            nodeType: extractNodeType(node),
+        },
+    }));
     const elements = nodeList.concat(edges);
 
     // Handle Subset sigs. Issue #9
