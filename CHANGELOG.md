@@ -1,5 +1,10 @@
 # Change Log
 
+## v2.12.0[2025-12-06]
+
+- ✨ Updated Alloy vizualization with contex menu, better layout, and legend
+- 🐛 Fixed alloy relation visualization overlapped
+
 ## v2.11.0[2025-12-01]
 
 - ⬆️ Upgraded Alloy to version 6.2.0
