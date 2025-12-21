@@ -41,6 +41,7 @@ body:
         - Alloy
         - nuXmv
         - Spectra
+        - Dafny
     validations:
       required: true
   - type: dropdown
