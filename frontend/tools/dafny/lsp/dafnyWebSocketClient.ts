@@ -72,7 +72,7 @@ export class DafnyWebSocketWorker {
     private connectionFailed = false;
     private pendingMessages: any[] = [];
     private connectedPort: MessagePort | null = null;
-    private connectionTimeout: NodeJS.Timeout | null = null;
+    private connectionTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor(url: string = getDefaultLspUrl()) {
         this.websocket = new WebSocket(url);
