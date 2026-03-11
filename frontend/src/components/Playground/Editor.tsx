@@ -256,7 +256,7 @@ const CodeEditor: React.FC<BasicCodeEditorProps> = (props: BasicCodeEditorProps)
                 onMount={handleEditorDidMount}
                 onChange={handleCodeChange}
             />
-            <HiddenAssessmentConfig referenceFormulas={["> 5 x"]} studentFormulas={[">= 5 x"]}/>
+            <HiddenAssessmentConfig referenceFormulas={["> 5 x"]} currentEditorValue={editorValue}/>
         </div>
     );
 };

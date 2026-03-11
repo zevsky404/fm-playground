@@ -188,6 +188,8 @@ export const executeZ3WithOptionOnServer = async () => {
         await executeCheckRedundancy();
     } else if (smtCliOption?.value === 'iterate-models') {
         await executeIterateModels();
+    } else if (smtCliOption?.value === 'assess-assignment') {
+        await executeAssessAssignment();
     } else if (smtCliOption?.value === 'execute-z3') {
         await executeZ3();
     }
@@ -509,4 +511,11 @@ async function executeIterateModels() {
         return;
     }
     jotaiStore.set(isExecutingAtom, false);
+}
+
+async function executeAssessAssignment() {
+    // Placeholder for future implementation of assignment assessment
+    jotaiStore.set(outputAtom, '; Assignment assessment is not implemented yet.');
+    jotaiStore.set(isExecutingAtom, false);
+    return;
 }

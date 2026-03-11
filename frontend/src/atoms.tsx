@@ -79,6 +79,9 @@ export const limbooleDiffFilterAtom = atom('');
 
 export const smtModelAtom = atom<any>(null);
 
+export const assignmentAssessmentStudentSpecAtom = atomWithStorage('assignment-assessment-student-spec', '', rawStringStorage);
+export const assignmentAssessmentReferenceSpecAtom = atomWithStorage('assignment-assessment-assessment-reference', '', rawStringStorage);
+
 jotaiStore.sub(editorValueAtom, () => {});
 jotaiStore.sub(languageAtom, () => {});
 jotaiStore.sub(lineToHighlightAtom, () => {});

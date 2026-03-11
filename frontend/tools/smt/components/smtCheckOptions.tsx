@@ -8,6 +8,7 @@ const SmtCheckOptions = () => {
         { value: 'check-redundancy', label: 'Check Redundancy' },
         { value: 'explain-redundancy', label: 'Explain Redundancy' },
         { value: 'iterate-models', label: 'Iterate Models' },
+        { value: 'assess-assignment', label: 'Assess Assignment' },
     ];
     const [smtCheckOption, setSmtCheckOption] = useAtom(smtCliOptionsAtom);
     const [isDarkTheme] = useAtom(isDarkThemeAtom);
