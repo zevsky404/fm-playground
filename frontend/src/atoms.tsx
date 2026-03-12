@@ -81,6 +81,7 @@ export const smtModelAtom = atom<any>(null);
 
 export const assignmentAssessmentStudentSpecAtom = atomWithStorage('assignment-assessment-student-spec', '', rawStringStorage);
 export const assignmentAssessmentReferenceSpecAtom = atomWithStorage('assignment-assessment-assessment-reference', '', rawStringStorage);
+export const hiddenFieldValueAtom = atomWithStorage('hidden-field-value', '', rawStringStorage);
 
 jotaiStore.sub(editorValueAtom, () => {});
 jotaiStore.sub(languageAtom, () => {});

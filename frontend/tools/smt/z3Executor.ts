@@ -24,6 +24,7 @@ import {
     enableLspAtom,
     smtCliOptionsAtom,
     smtModelAtom,
+    hiddenFieldValueAtom,
 } from '@/atoms';
 import axios from 'axios';
 import { Permalink } from '@/types';
@@ -514,8 +515,72 @@ async function executeIterateModels() {
 }
 
 async function executeAssessAssignment() {
-    // Placeholder for future implementation of assignment assessment
-    jotaiStore.set(outputAtom, '; Assignment assessment is not implemented yet.');
+    const hiddenFieldValue = jotaiStore.get(hiddenFieldValueAtom);
+    const language = jotaiStore.get(languageAtom);
+    const permalink = jotaiStore.get(permalinkAtom);
+    const enableLsp = jotaiStore.get(enableLspAtom);
+    const smtCmdOption = jotaiStore.get(smtCliOptionsAtom);
+
+    // Set current check option for logging
+    __currentCheckOption = smtCmdOption.value || 'execute-z3';
+
+    let response: any = null;
+    const metadata = { ls: enableLsp, command: smtCmdOption.value };
+    try {
+        response = await saveCodeAndRefreshHistory(hiddenFieldValue, language.short, permalink.permalink || null, metadata);
+        if (response) {
+            jotaiStore.set(permalinkAtom, response.data);
+        }
+    } catch (error: any) {
+        jotaiStore.set(
+            outputAtom,
+            `Something went wrong. If the problem persists, open an <a href="${fmpConfig.issues}" target="_blank">issue</a>`
+        );
+    }
+
+    try {
+        const res = await fetchZ3Result(response?.data);
+
+        // Handle new response format from backend
+        // Backend returns: { result: string, redundant_lines: array }
+        // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
+        const result: string = res.result ?? res[0] ?? '';
+        const redundantLines: any[] = res.redundant_lines ?? res[1] ?? [];
+
+        if (result.includes('(error')) {
+            jotaiStore.set(outputAtom, result);
+            jotaiStore.set(smtModelAtom, { result: result, error: true });
+            jotaiStore.set(lineToHighlightAtom, getLineToHighlight(result, language.id) || []);
+            jotaiStore.set(isExecutingAtom, false);
+            return;
+        }
+        if (redundantLines && redundantLines.length > 0) {
+            __redundantLinesToRemove = redundantLines;
+            jotaiStore.set(lineToHighlightAtom, redundantLines);
+
+            const msg =
+                result +
+                `; --------------------------------\n; Your script contains redundant assertions (see highlighted lines).\n; Do you want to remove them?` +
+                `\n<button onclick="__commentRedundantAssertions()">Comment out</button> ` +
+                `<button onclick="__removeRedundantAssertions()">Remove</button>`;
+            jotaiStore.set(outputAtom, msg);
+            jotaiStore.set(smtModelAtom, { result: msg });
+            jotaiStore.set(isExecutingAtom, false);
+            return;
+        }
+
+        jotaiStore.set(outputAtom, result);
+        jotaiStore.set(smtModelAtom, { result: result });
+    } catch (error) {
+        jotaiStore.set(
+            outputAtom,
+            (error as any).message +
+                `\nIf the problem persists, open an <a href="${fmpConfig.issues}" target="_blank">issue</a>`
+        );
+        jotaiStore.set(smtModelAtom, { error: (error as any).message });
+        jotaiStore.set(isExecutingAtom, false);
+        return;
+    }
     jotaiStore.set(isExecutingAtom, false);
     return;
 }
