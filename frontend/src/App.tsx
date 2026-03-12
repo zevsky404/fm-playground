@@ -5,6 +5,7 @@ import { Provider as JotaiProvider, useAtom } from 'jotai';
 import Nav from '@/components/Utils/Nav';
 import Footer from '@/components/Utils/Footer';
 import Playground from '@/components/Playground/Playground';
+import TeacherPage from '@/components/TeacherArea/TeacherPage.tsx';
 import Login from '@/components/Authentication/Login';
 import ProtectedRoutes from '@/components/Authentication/ProtectedRoutes';
 import Missing from '@/components/Utils/Missing';
@@ -49,6 +50,7 @@ const App = () => {
                     <Router>
                         <Routes>
                             <Route element={<ProtectedRoutes />}></Route>
+                            <Route path="/teacher" element={<TeacherPage />} />
                             <Route path='/' element={<Playground editorTheme={editorTheme} />} />
                             <Route path='/login' element={<Login />} />
                             <Route path='*' element={<Missing />} />
