@@ -175,7 +175,7 @@ async function fetchZ3Result(permalink: Permalink) {
 
 // Fetch generated assignment (extract assertions and code without assertions)
 async function fetchGenerateAssignment(permalink: Permalink) {
-    let url = `/smt/generate-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
+    let url = `/smt/smt/generate-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
     try {
         const response = await axios.get(url);
         return response.data;
@@ -560,6 +560,7 @@ async function executeAssessAssignment() {
         // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
         const result: string = res.result ?? res[0] ?? '';
         const redundantLines: any[] = res.redundant_lines ?? res[1] ?? [];
+        console.log(result)
 
         if (result.includes('(error')) {
             jotaiStore.set(outputAtom, result);

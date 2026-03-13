@@ -323,12 +323,14 @@ def generate_assignment(check: str, p: str):
         # Determine logic from the script without assertions first (safer),
         # fall back to original script if needed.
         logic = get_logic_from_smt2(code_no_assertions) or get_logic_from_smt2(code)
-        if logic is None:
-            raise HTTPException(status_code=400, detail="Unsupported or missing logic")
+
+        #if logic is None:
+        #    raise HTTPException(status_code=400, detail="Unsupported or missing logic")
 
         # Create a solver and load the full script (including assertions) so
         # behavior remains consistent with prior implementation.
-        solver = SolverFor(logic)
+        #solver = SolverFor(logic) if logic else Solver()
+        solver = SolverFor("ALL")
         solver.from_string(code)
         solver.assertions()
 
