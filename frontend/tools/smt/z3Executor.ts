@@ -520,7 +520,7 @@ async function executeIterateModels() {
 async function executeAssessAssignment() {
     const hiddenFieldValue = jotaiStore.get(hiddenFieldValueAtom);
     const language = jotaiStore.get(languageAtom);
-    const permalink = jotaiStore.get(permalinkAtom);
+    let permalink = jotaiStore.get(permalinkAtom);
     const enableLsp = jotaiStore.get(enableLspAtom);
     const smtCmdOption = jotaiStore.get(smtCliOptionsAtom);
 
@@ -591,7 +591,7 @@ async function executeAssessAssignment() {
 async function executeGenerateAssignment() {
     const referenceSpec = jotaiStore.get(assignmentAssessmentReferenceSpecAtom);
     const language = jotaiStore.get(languageAtom);
-    const permalink = jotaiStore.get(permalinkAtom);
+    let permalink = jotaiStore.get(permalinkAtom);
     const enableLsp = jotaiStore.get(enableLspAtom);
     const smtCmdOption = jotaiStore.get(smtCliOptionsAtom);
 
@@ -658,7 +658,8 @@ async function executeGenerateAssignment() {
     }
     jotaiStore.set(isExecutingAtom, false);
     console.log(jotaiStore.get(assignmentAssessmentReferenceSpecAtom));
-    const link = `http://localhost:5173/?ref=${permalink}`;
+    permalink = jotaiStore.get(permalinkAtom)
+    const link = `http://localhost:5173/?check=${permalink.check}&p=${permalink.permalink}`;
     window.open(link, "_blank");
     return;
 }
