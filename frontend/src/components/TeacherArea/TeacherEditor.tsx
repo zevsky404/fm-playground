@@ -50,6 +50,7 @@ const TeacherEditor: React.FC<TeacherEditorProps> = ({ editorTheme, onRunButtonC
     const [isNewSpecModalOpen, setIsNewSpecModalOpen] = useState(false); // state to control the new spec modal
     const [isMobile, setIsMobile] = useState(false);
 
+    jotaiStore.set(assignmentAssessmentReferenceSpecAtom, editorValue);
     // Check screen size on mount and resize for mobile detection
     useEffect(() => {
         const checkScreenSize = () => {
