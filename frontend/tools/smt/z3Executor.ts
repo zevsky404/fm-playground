@@ -173,6 +173,17 @@ async function fetchZ3Result(permalink: Permalink) {
     }
 }
 
+// Fetch generated assignment (extract assertions and code without assertions)
+async function fetchGenerateAssignment(permalink: Permalink) {
+    let url = `/smt/generate-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 /**
  * Execute Z3 on the server.
  * Handles redundant assertions if returned by the server.
@@ -613,39 +624,24 @@ async function executeGenerateAssignment() {
     }
 
     try {
-        const res = await fetchZ3Result(response?.data);
+        // Call the generate-assignment endpoint which returns assertions + code without assertions
+        const res = await fetchGenerateAssignment(response?.data);
 
-        // Handle new response format from backend
-        // Backend returns: { result: string, redundant_lines: array }
-        // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
-        const result: string = res.result ?? res[0] ?? '';
-        const redundantLines: any[] = res.redundant_lines ?? res[1] ?? [];
+        const assertions: string[] = res.assertions ?? [];
+        const codeWithoutAssertions: string = res.code_without_assertions ?? '';
 
-        if (result.includes('(error')) {
-            jotaiStore.set(outputAtom, result);
-            jotaiStore.set(smtModelAtom, { result: result, error: true });
-            jotaiStore.set(lineToHighlightAtom, getLineToHighlight(result, language.id) || []);
-            jotaiStore.set(isExecutingAtom, false);
-            console.log(jotaiStore.get(assignmentAssessmentReferenceSpecAtom));
-            return;
+        let outMsg = '';
+        if (assertions.length > 0) {
+            outMsg += '; Extracted Assertions:\n';
+            assertions.forEach((a, idx) => {
+                outMsg += `; [${idx + 1}] ${a}\n`;
+            });
+            outMsg += '\n';
         }
-        if (redundantLines && redundantLines.length > 0) {
-            __redundantLinesToRemove = redundantLines;
-            jotaiStore.set(lineToHighlightAtom, redundantLines);
+        outMsg += '; Code without assertions:\n' + codeWithoutAssertions;
 
-            const msg =
-                result +
-                `; --------------------------------\n; Your script contains redundant assertions (see highlighted lines).\n; Do you want to remove them?` +
-                `\n<button onclick="__commentRedundantAssertions()">Comment out</button> ` +
-                `<button onclick="__removeRedundantAssertions()">Remove</button>`;
-            jotaiStore.set(outputAtom, msg);
-            jotaiStore.set(smtModelAtom, { result: msg });
-            jotaiStore.set(isExecutingAtom, false);
-            return;
-        }
-
-        jotaiStore.set(outputAtom, result);
-        jotaiStore.set(smtModelAtom, { result: result });
+        jotaiStore.set(outputAtom, outMsg);
+        jotaiStore.set(smtModelAtom, { result: outMsg });
     } catch (error) {
         jotaiStore.set(
             outputAtom,

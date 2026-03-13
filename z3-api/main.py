@@ -9,6 +9,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from redis_cache import RedisCache
+from z3 import SolverFor
+from utils.helper import get_logic_from_smt2
+
 from smt_redundancy.explain_redundancy import (
     explain_redundancy_from_smtlib,
     explain_redundancy_from_smtlib_by_assertion,
@@ -258,3 +261,86 @@ def get_next_model_from_cache(specId: str, p: str):
         raise HTTPException(
             status_code=500, detail=f"Error retrieving next witness: {str(e)}"
         )
+    
+@app.get("/smt/generate-assignment/", response_model=None)
+def generate_assignment(check: str, p: str):
+    code = get_code_by_permalink(check, p)
+    try:
+        # Extract assertions from the SMT-LIB script and produce a code string
+        # without assertions
+        def extract_assertions(spec: str):
+            """
+            Return (assertions_list, spec_without_assertions).
+            This scans the SMT-LIB script for top-level '(assert ...)'
+            and extracts them while preserving the rest of the script. It
+            performs a simple balanced-parentheses scan and is resilient to
+            parentheses inside strings and nested expressions.
+            """
+            assertions = []
+            i = 0
+            n = len(spec)
+            # Work on a mutable copy
+            s = spec
+            while True:
+                idx = s.find("(assert", i)
+                if idx == -1:
+                    break
+                # Find the start of the assertion (the '(' at idx)
+                start = idx
+                j = start
+                depth = 0
+                in_string = False
+                end = None
+                while j < n:
+                    ch = s[j]
+                    # Handle string delimiters to avoid counting parentheses inside strings
+                    if ch == '"' and (j == 0 or s[j - 1] != "\\"):
+                        in_string = not in_string
+                    if not in_string:
+                        if ch == '(':
+                            depth += 1
+                        elif ch == ')':
+                            depth -= 1
+                            if depth == 0:
+                                end = j + 1
+                                break
+                    j += 1
+                if end is None:
+                    # Unbalanced parentheses: take to end
+                    end = n
+                assertion = s[start:end]
+                assertions.append(assertion)
+                # Remove the assertion from the script, replace with a newline
+                s = s[:start] + "\n" + s[end:]
+                # Reset indices to continue scanning after start
+                i = start
+                n = len(s)
+
+            return assertions, s
+
+        assertions, code_no_assertions = extract_assertions(code)
+
+        # Determine logic from the script without assertions first (safer),
+        # fall back to original script if needed.
+        logic = get_logic_from_smt2(code_no_assertions) or get_logic_from_smt2(code)
+        if logic is None:
+            raise HTTPException(status_code=400, detail="Unsupported or missing logic")
+
+        # Create a solver and load the full script (including assertions) so
+        # behavior remains consistent with prior implementation.
+        solver = SolverFor(logic)
+        solver.from_string(code)
+        solver.assertions()
+
+        try:
+            if assertions:
+                log_to_db(p, json.dumps({"analysis": "generate_assignment", "extracted_assertions_count": len(assertions)}))
+        except Exception:
+            pass
+
+        # Return the extracted assertions and a version of the script without them
+        return {"assertions": assertions, "code_without_assertions": code_no_assertions}
+        
+    except Exception as e:
+        log_to_db(p, json.dumps({"error": str(e)}))
+        raise HTTPException(status_code=500, detail=f"Error generating assignment: {str(e)}")
