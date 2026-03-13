@@ -643,6 +643,12 @@ async function executeGenerateAssignment() {
 
         jotaiStore.set(outputAtom, outMsg);
         jotaiStore.set(smtModelAtom, { result: outMsg });
+        jotaiStore.set(editorValueAtom, codeWithoutAssertions);
+        permalink = jotaiStore.get(permalinkAtom)
+        const link = `http://localhost:5173/`
+        //const link = `http://localhost:5173/?check=${permalink.check}&p=${permalink.permalink}`;
+        window.open(link, "_blank");
+
     } catch (error) {
         jotaiStore.set(
             outputAtom,
@@ -654,9 +660,9 @@ async function executeGenerateAssignment() {
         return;
     }
     jotaiStore.set(isExecutingAtom, false);
-    console.log(jotaiStore.get(assignmentAssessmentReferenceSpecAtom));
+    /*console.log(jotaiStore.get(assignmentAssessmentReferenceSpecAtom));
     permalink = jotaiStore.get(permalinkAtom)
     const link = `http://localhost:5173/?check=${permalink.check}&p=${permalink.permalink}`;
-    window.open(link, "_blank");
+    window.open(link, "_blank");*/
     return;
 }
