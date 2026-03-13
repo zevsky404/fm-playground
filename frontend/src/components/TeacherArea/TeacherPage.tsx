@@ -52,7 +52,7 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
     const [, setDiffComparisonHistoryId] = useAtom(diffComparisonHistoryIdAtom); // contains the history ID of the comparison code.
     const [errorMessage, setErrorMessage] = useState<string | null>(null); // contains the error messages from the API.
     const [isErrorMessageModalOpen, setIsErrorMessageModalOpen] = useState(false); // contains the state of the message modal.
-    const [referenceSpec,setReferenceSpec] = useAtom(assignmentAssessmentReferenceSpecAtom);
+    const [referenceSpec, setReferenceSpec] = useAtom(assignmentAssessmentReferenceSpecAtom);
     const [smtCheckOption] = useAtom(smtCliOptionsAtom);
 
     /**
@@ -60,16 +60,6 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
      */
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const refParam = urlParams.get('ref');
-        if (refParam){
-            try {
-                const decoded = JSON.parse(decodeURIComponent(refParam));
-                setReferenceSpec(decoded);
-                console.log(decoded);
-            } catch (err){
-                console.error("Failed to parse reference spec:", err);
-            }
-        }
         let checkParam = urlParams.get('check');
         if (checkParam === 'VAL' || checkParam === 'QBF') {
             checkParam = 'SAT';

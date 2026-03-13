@@ -17,6 +17,8 @@ import {
     lineToHighlightAtom,
     isDiffViewModeAtom,
     originalCodeAtom,
+    jotaiStore,
+    assignmentAssessmentReferenceSpecAtom,
 } from '@/atoms';
 import ConfirmModal from '@/components/Utils/Modals/ConfirmModal';
 import FileUploadButton from '@/components/Utils/FileUpload';
@@ -61,6 +63,11 @@ const TeacherEditor: React.FC<TeacherEditorProps> = ({ editorTheme, onRunButtonC
             window.removeEventListener('resize', checkScreenSize);
         };
     }, []);
+
+    useEffect(() => {
+        setEditorValue(editorValue);
+        jotaiStore.set(assignmentAssessmentReferenceSpecAtom, editorValue);
+    }, [editorValue]);
 
     const AdditionalUi = additionalInputAreaUiMap[language.short];
 

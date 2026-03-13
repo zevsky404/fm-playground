@@ -626,6 +626,7 @@ async function executeGenerateAssignment() {
             jotaiStore.set(smtModelAtom, { result: result, error: true });
             jotaiStore.set(lineToHighlightAtom, getLineToHighlight(result, language.id) || []);
             jotaiStore.set(isExecutingAtom, false);
+            console.log(jotaiStore.get(assignmentAssessmentReferenceSpecAtom));
             return;
         }
         if (redundantLines && redundantLines.length > 0) {
@@ -656,6 +657,7 @@ async function executeGenerateAssignment() {
         return;
     }
     jotaiStore.set(isExecutingAtom, false);
+    console.log(jotaiStore.get(assignmentAssessmentReferenceSpecAtom));
     const link = `http://localhost:5173/?ref=${permalink}`;
     window.open(link, "_blank");
     return;

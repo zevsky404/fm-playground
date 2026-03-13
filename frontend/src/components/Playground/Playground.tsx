@@ -57,16 +57,6 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
      */
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const refParam = urlParams.get('ref');
-        if (refParam){
-            try {
-                const decoded = JSON.parse(decodeURIComponent(refParam));
-                setReferenceSpec(decoded);
-                console.log(decoded);
-            } catch (err){
-                console.error("Failed to parse reference spec:", err);
-            }
-        }
         let checkParam = urlParams.get('check');
         if (checkParam === 'VAL' || checkParam === 'QBF') {
             checkParam = 'SAT';
