@@ -54,8 +54,6 @@ const RefrenceInput: React.FC<Props> = ({ onChange }) => {
     };
     return (
         <div style={{ marginTop: "20px" }}>
-            <h3>Reference Specification</h3>
-
             <Editor
                 height = "400px"
                 language = "smt-2"

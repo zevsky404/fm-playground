@@ -50,7 +50,7 @@ const App = () => {
                     <Router>
                         <Routes>
                             <Route element={<ProtectedRoutes />}></Route>
-                            <Route path="/teacher" element={<TeacherPage />} />
+                            <Route path="/teacher" element={<TeacherPage editorTheme={editorTheme}/>} />
                             <Route path='/' element={<Playground editorTheme={editorTheme} />} />
                             <Route path='/login' element={<Login />} />
                             <Route path='*' element={<Missing />} />

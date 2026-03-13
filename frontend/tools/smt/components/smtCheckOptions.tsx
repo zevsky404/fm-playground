@@ -1,15 +1,22 @@
 import Select, { SingleValue } from 'react-select';
+import { useLocation } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import { smtCliOptionsAtom, isDarkThemeAtom } from '@/atoms';
 
 const SmtCheckOptions = () => {
-    const options = [
+    const location = useLocation();
+    const isTeacherPage = location.pathname === '/teacher';
+    const baseOptions = [
         { value: 'execute-z3', label: 'Execute SMT' },
         { value: 'check-redundancy', label: 'Check Redundancy' },
         { value: 'explain-redundancy', label: 'Explain Redundancy' },
         { value: 'iterate-models', label: 'Iterate Models' },
-        { value: 'assess-assignment', label: 'Assess Assignment' },
     ];
+    const teacherOption =  { value: 'generate-assignment', label: 'Generate Assignment' };
+    const studentOption = { value: 'assess-assignment', label: 'Assess Assignment' };
+
+    const options = isTeacherPage ? [...baseOptions, teacherOption] : [...baseOptions, studentOption];
+
     const [smtCheckOption, setSmtCheckOption] = useAtom(smtCliOptionsAtom);
     const [isDarkTheme] = useAtom(isDarkThemeAtom);
 
