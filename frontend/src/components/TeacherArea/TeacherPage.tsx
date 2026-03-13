@@ -165,27 +165,7 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
         }
     };
 
-    const generateAssignment = () => {
-
-        if (!referenceSpec || referenceSpec.length === 0) {
-            alert("No reference found.");
-            return;
-        }
-
-        const encoded = encodeURIComponent(JSON.stringify(referenceSpec));
-
-        const link = `http://localhost:5173/?ref=${encoded}`;
-
-        window.open(link, "_blank");
-    };
-
     const handleToolExecution = async () => {
-        if (smtCheckOption?.value === "generate-assignment" ) {
-            generateAssignment();
-            return;
-
-        }
-
         setOutput('');
 
         try {

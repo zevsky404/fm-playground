@@ -17,7 +17,38 @@ const HiddenAssessmentConfig : React.FC<ConfigProps> = ({ referenceFormulas, cur
     //const [studentSpec, setStudentSpec] = useAtom(assignmentAssessmentStudentSpecAtom);
     //const [refSpec, setRefSpec] = useAtom(assignmentAssessmentReferenceSpecAtom);
 
-    const [stringsToCompare,] = useState<string[]>([';', 'declare', 'check-sat', 'get-model']);
+    const extractAssertions = (content: string): string[] => {
+        const results: string[] = [];
+        let index = 0;
+
+        while (index < content.length) {
+            const start = content.indexOf("(assert", index);
+            if (start === -1) break;
+
+            let parenCount = 0;
+            let end = start;
+
+            for (; end < content.length; end++) {
+
+                if (content[end] === "(") parenCount++;
+                if (content[end] === ")") parenCount--;
+
+                if (parenCount === 0) {
+                    end++;
+                    break;
+                }
+            }
+
+            const assertion = content.slice(start, end).trim();
+
+            if (assertion) {
+                results.push(assertion);
+            }
+
+            index = end;
+        }
+        return results
+    }
 
     // Update teacher reference when it changes?
     useEffect(() => {
@@ -28,20 +59,18 @@ const HiddenAssessmentConfig : React.FC<ConfigProps> = ({ referenceFormulas, cur
         jotaiStore.set(assignmentAssessmentReferenceSpecAtom, referenceFormulas)
     }, [referenceFormulas]);
 
-    const formattedReferenceFormulas = referenceFormulas
-        .split('\n')
-        .filter(line => !stringsToCompare.some(str => line.includes(str)))
-        .map((line) => { return line.replace('(assert', '').trim(); });
+    const formattedReferenceFormulas = extractAssertions(referenceFormulas)
+        .map((line) => { return line.replace('(assert', '').trim().slice(0, -1); })
+        .join(' ');
 
-    const formattedStudentSolution = currentEditorValue
-        .split('\n')
-        .filter(line => !stringsToCompare.some(str => line.includes(str)))
-        .map((line) => { return line.replace('(assert', '').trim().slice(0, -1); });
-
+    const formattedStudentSolution = extractAssertions(currentEditorValue)
+        .map((line) => { return line.replace('(assert', '').trim().slice(0, -1); })
+        .join(' ');
+    
     useEffect(() => {
         jotaiStore.set(
             hiddenFieldValueAtom,
-            `(assert (=> ${formattedStudentSolution.length > 1 ? `(and ${formattedStudentSolution})` : formattedStudentSolution[0]} ({formattedReferenceFormulas})))`
+            `(assert (=> ${formattedStudentSolution.length > 1 ? `(and ${formattedStudentSolution})` : formattedStudentSolution[0]} (${formattedReferenceFormulas})))`
         );
     }, [formattedStudentSolution]);
 

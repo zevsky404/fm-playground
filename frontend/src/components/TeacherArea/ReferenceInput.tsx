@@ -1,11 +1,11 @@
-import {useCallback, useState} from "react";
+import { useState } from "react";
 import Editor from "@monaco-editor/react";
 
 interface Props {
     onChange: (assertions: string[]) => void;
 }
 
-const RefrenceInput: React.FC<Props> = ({ onChange }) => {
+const ReferenceInput: React.FC<Props> = ({ onChange }) => {
     const [editorValue, setEditorValue] = useState("");
     const [assertions, setAssertions] = useState<string[]>([]);
 
@@ -80,4 +80,4 @@ const RefrenceInput: React.FC<Props> = ({ onChange }) => {
     );
 };
 
-export default RefrenceInput;
+export default ReferenceInput;
