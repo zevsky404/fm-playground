@@ -57,6 +57,8 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
      * Load the code and language from the URL.
      */
     useEffect(() => {
+        if (localStorage.getItem("generatedAssignment")) return;
+
         const urlParams = new URLSearchParams(window.location.search);
         let checkParam = urlParams.get('check');
         if (checkParam === 'VAL' || checkParam === 'QBF') {
@@ -126,6 +128,8 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
                 jotaiStore.set(permalinkAtom, response?.data);
             });
             localStorage.removeItem("generatedAssignment");
+
+            return;
         }
 
     }, []);

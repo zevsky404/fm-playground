@@ -82,13 +82,9 @@ def check_soundness(code, assertions_student, assertions_teacher):
 
     solver.add(student_formula, Not(teacher_formula))
 
-    print(solver.assertions())
-
     result = solver.check()
-    print(str(result))
 
     if str(result) == 'sat':
-        print(solver.model())
         return {'result': str(result), 'model': str(solver.model())}
     else:
         return {'result': str(result), 'model': ''}
@@ -104,13 +100,9 @@ def check_completeness(code, assertions_student, assertions_teacher):
 
     solver.add(teacher_formula, Not(student_formula))
 
-    print(solver.assertions())
-
     result = solver.check()
-    print(result)
 
     if str(result) == 'sat':
-        print(solver.model())
         return {'result': str(result), 'model': str(solver.model())}
     else:
         return {'result': str(result), 'model': ''}
@@ -146,7 +138,6 @@ def execute_z3(check: str, p: str):
     code = get_code_by_permalink(check, p)
     try:
         result, redundant_lines = execution_queue(code)
-        print(result)
         log_to_db(
             p,
             json.dumps(
@@ -319,20 +310,15 @@ def assess_assignment(check: str, p: str):
     except Exception:
         raise HTTPException(status_code=404, detail="Permalink not found")
 
-    print(code)
-    print(teacher_reference)
-
     logic = get_logic_from_smt2(teacher_reference)
     solver_teacher = SolverFor(logic) if logic else Solver()
     solver_teacher.from_string(teacher_reference)
     assertions_teacher = solver_teacher.assertions()
-    print(assertions_teacher)
 
     logic = get_logic_from_smt2(code)
     solver_student = SolverFor(logic) if logic else Solver()
     solver_student.from_string(code)
     assertions_student = solver_student.assertions()
-    print(assertions_student)
 
     sound = check_soundness(code, assertions_student, assertions_teacher)
     complete = check_completeness(code, assertions_student,  assertions_teacher)
@@ -353,7 +339,7 @@ def generate_assignment(check: str, p: str):
         solver.from_string(code)
         z3_assertions = solver.assertions()
 
-        assertions = [f"(assert ({a.sexpr()}))" for a in z3_assertions]
+        assertions = [f"(assert {a.sexpr()})" for a in z3_assertions]
 
         code_no_assertions = code
         for a in assertions:

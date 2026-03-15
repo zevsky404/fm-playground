@@ -575,7 +575,18 @@ async function executeAssessAssignment() {
     try {
         // Backend returns: { soundness: {result, model}, completeness: {result, model}, equivalence: bool }
         const result = await fetchAssessAssignment(response?.data);
-        console.log(result);
+
+        if (result['equivalence']) {
+            jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, 'Student Solution and reference are equal.');
+            return;
+        }
+
+        if (result['soundness']['result'] === "sat" && result['completeness']['result'] == "sat" ){
+            jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, 'Student solution is not sound and not complete');
+            return;
+        }
 
         if (result['soundness']['result'] != "unsat") {
             jotaiStore.set(isExecutingAtom, false);
@@ -589,11 +600,7 @@ async function executeAssessAssignment() {
             return;
         }
 
-        if (result['equivalence']) {
-            jotaiStore.set(isExecutingAtom, false);
-            jotaiStore.set(outputAtom, 'Student Solution and reference are equal.');
-            return;
-        }
+
 
     } catch (error) {
         jotaiStore.set(
