@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from markdown_it.rules_block import reference
 from pydantic import BaseModel
 from redis_cache import RedisCache
-from z3 import SolverFor, Solver, And, Not
+from z3 import SolverFor, Solver, And, Or, Not, Implies
 from utils.helper import get_logic_from_smt2
 
 from smt_redundancy.explain_redundancy import (
@@ -73,38 +73,47 @@ def log_to_db(p: str, result: str):
     except Exception:
         pass
 
-def check_soundness(code, assertions_teacher):
-    logic = get_logic_from_smt2(code)
-    solver_student = SolverFor(logic) if logic else Solver()
-    solver_student.from_string(code)
-
-    teacher_formula = And(*assertions_teacher)
-
-    solver_student.add(Not(teacher_formula))
-
-    print(solver_student.assertions())
-
-    result = solver_student.check()
-
-    print(result)
-    print(solver_student.model())
-
-def check_completeness(code, assertions_student, assertions_teacher):
+def check_soundness(code, assertions_student, assertions_teacher):
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
+    solver.from_string(code)
 
-    teacher_formula = And(*assertions_teacher)
-    student_formula = And(*assertions_student)
+    teacher_formula = And(*assertions_teacher) if len(assertions_teacher) > 1 else assertions_teacher[0]
+    student_formula = And(*assertions_student) if len(assertions_student) > 1 else assertions_student[0]
 
-    solver.add(teacher_formula)
-    solver.add(Not(student_formula))
+    solver.add(Implies(student_formula, teacher_formula))
 
     print(solver.assertions())
 
     result = solver.check()
+    print(str(result))
 
+    if str(result) == 'sat':
+        return {'result': str(result), 'model': ''}
+    else:
+        return {'result': str(result), 'model': ''}
+
+
+
+def check_completeness(code, assertions_student, assertions_teacher):
+    logic = get_logic_from_smt2(code)
+    solver = SolverFor(logic) if logic else Solver()
+    solver.from_string(code)
+
+    teacher_formula = And(*assertions_teacher) if len(assertions_teacher) > 1 else assertions_teacher[0]
+    student_formula = And(*assertions_student) if len(assertions_student) > 1 else assertions_student[0]
+
+    solver.add(Implies(teacher_formula, student_formula))
+
+    print(solver.assertions())
+
+    result = solver.check()
     print(result)
-    print(solver.model())
+
+    if str(result) == 'sat':
+        return {'result': str(result), 'model': ''}
+    else:
+        return {'result': str(result), 'model': ''}
 
 def run_z3(code: str, check_redundancy: bool = False) -> str:
     if is_redis_available():
@@ -325,12 +334,11 @@ def assess_assignment(check: str, p: str):
     assertions_student = solver_student.assertions()
     print(assertions_student)
 
-    sound = check_soundness(code, assertions_teacher)
+    sound = check_soundness(code, assertions_student, assertions_teacher)
     complete = check_completeness(code, assertions_student,  assertions_teacher)
-    #equivalence = check_equivalence()
+    equivalence = True if sound['result'] == 'sat' and complete['result'] == 'sat' else False
 
-    return {"code": code, "reference": teacher_reference}
-
+    return {'soundness': sound, 'completeness': complete, 'equivalence': equivalence}
 
 
 @app.get("/smt/generate-assignment/", response_model=None)

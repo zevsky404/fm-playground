@@ -24,7 +24,6 @@ import {
     enableLspAtom,
     smtCliOptionsAtom,
     smtModelAtom,
-    hiddenFieldValueAtom,
     assignmentAssessmentReferenceSpecAtom,
 } from '@/atoms';
 import axios from 'axios';
@@ -353,7 +352,7 @@ async function executeCheckRedundancy() {
     let response: any = null;
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
     try {
-        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, metadata);
+        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, null, metadata);
         if (response) {
             jotaiStore.set(permalinkAtom, response.data);
         }
@@ -574,23 +573,30 @@ async function executeAssessAssignment() {
     }
 
     try {
+        // Backend returns: { soundness: {result, model}, completeness: {result, model}, equivalence: bool }
+        const result = await fetchAssessAssignment(response?.data);
+        console.log(result);
 
-        const res = await fetchAssessAssignment(response?.data);
-
-        // Backend returns: { result: string, redundant_lines: array }
-        // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
-        const result: string = res.reference;
-
-        if (result.includes('(error')) {
-            jotaiStore.set(outputAtom, result);
-            jotaiStore.set(smtModelAtom, { result: result, error: true });
-            jotaiStore.set(lineToHighlightAtom, getLineToHighlight(result, language.id) || []);
+        if (result['soundness']['result'] != "sat") {
             jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, 'Student solution is not sound.');
+            jotaiStore.set(smtModelAtom, result['soundness']['model']);
             return;
         }
 
-        jotaiStore.set(outputAtom, result);
-        jotaiStore.set(smtModelAtom, { result: result });
+        if (result['completeness']['result'] != "sat") {
+            jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, 'Student solution is not complete.');
+            jotaiStore.set(smtModelAtom, result['completeness']['model']);
+            return;
+        }
+
+        if (result['equivalence']) {
+            jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, 'Student Solution and reference are equal.');
+            return;
+        }
+
     } catch (error) {
         jotaiStore.set(
             outputAtom,
