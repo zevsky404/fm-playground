@@ -64,7 +64,8 @@ export async function saveCode(
     code: string,
     check: string,
     parent: string | null,
-    metadata: Record<string, any> | null
+    metadata: Record<string, any> | null,
+    reference: string | null,
 ) {
     let url = `${API_URL}/save`;
     const md = {
@@ -72,7 +73,7 @@ export async function saveCode(
         'fmp-version': FMP_VERSION,
     };
     let meta = JSON.stringify(md);
-    const response = await axiosAuth.post(url, { code, check, parent, meta });
+    const response = await axiosAuth.post(url, { code, check, parent, meta, reference });
     if (response.status === 200) {
         return response;
     }

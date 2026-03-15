@@ -88,10 +88,28 @@ def save():
     user_id = session.get("user_id")
     current_time = datetime.now(pytz.utc)
     data = request.get_json()
-    check_type = data["check"]
-    code = data["code"]
-    parent = get_id_by_permalink(data["parent"])
-    metadata = data["meta"]
+    check_type = data.get("check")
+
+    # Support both single 'code' and multiple 'codes' payloads.
+    # Frontend may POST { codes: [code1, code2], check: ..., parent: ..., meta: ... }
+    codes_field = data.get("codes")
+    if codes_field is not None:
+        # If codes is a list, join them with double-newline separator; otherwise coerce to string
+        if isinstance(codes_field, (list, tuple)):
+            code = "\n\n".join([str(c) for c in codes_field])
+        else:
+            code = str(codes_field)
+    else:
+        code = data.get("code")
+
+    # Parent can be a single permalink or an array of permalinks. Accept both.
+    parent_field = data.get("parent")
+    if isinstance(parent_field, (list, tuple)):
+        parent = get_id_by_permalink(parent_field[0]) if len(parent_field) > 0 else None
+    else:
+        parent = get_id_by_permalink(parent_field)
+
+    metadata = data.get("meta")
     if parent is None:
         parent_id = None
     else:

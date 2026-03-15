@@ -9,15 +9,17 @@ import { jotaiStore, historyRefreshTriggerAtom } from '@/atoms';
  * @param language - The language/tool short name
  * @param permalink - The optional permalink
  * @param metadata - Optional metadata object
+ * @param reference - Optional reference for assignment assessment
  * @returns Promise with the save response
  */
 export const saveCodeAndRefreshHistory = async (
     editorValue: string,
     language: string,
     permalink: string | null,
-    metadata?: any
+    reference: string | null,
+    metadata?: any,
 ) => {
-    const response = await saveCode(editorValue, language, permalink, metadata);
+    const response = await saveCode(editorValue, language, permalink, metadata, reference);
 
     // Trigger history refresh by incrementing the refresh trigger atom
     const currentValue = jotaiStore.get(historyRefreshTriggerAtom);
@@ -25,3 +27,5 @@ export const saveCodeAndRefreshHistory = async (
 
     return response;
 };
+
+

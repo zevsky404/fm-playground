@@ -261,7 +261,14 @@ def get_next_model_from_cache(specId: str, p: str):
         raise HTTPException(
             status_code=500, detail=f"Error retrieving next witness: {str(e)}"
         )
+
+@app.get("/smt/assess-assignment/", response_model=None)
+def assess_assignment(check: str, p_student: str, p_teacher: str):
+    code_student = get_code_by_permalink(check, p_student)
+    code_teacher = get_code_by_permalink(check, p_teacher)
+
     
+
 @app.get("/smt/generate-assignment/", response_model=None)
 def generate_assignment(check: str, p: str):
     code = get_code_by_permalink(check, p)

@@ -229,7 +229,7 @@ async function executeExplainRedundancy() {
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
 
     try {
-        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, metadata);
+        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, null, metadata);
         if (response) {
             jotaiStore.set(permalinkAtom, response.data);
         }
@@ -415,7 +415,7 @@ async function executeZ3() {
     let response: any = null;
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
     try {
-        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, metadata);
+        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, null, metadata);
         if (response) {
             jotaiStore.set(permalinkAtom, response.data);
         }
@@ -486,7 +486,7 @@ async function executeIterateModels() {
     let response: any = null;
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
     try {
-        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, metadata);
+        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink || null, null, metadata);
         if (response) {
             jotaiStore.set(permalinkAtom, response.data);
         }
@@ -529,7 +529,9 @@ async function executeIterateModels() {
 }
 
 async function executeAssessAssignment() {
-    const hiddenFieldValue = jotaiStore.get(hiddenFieldValueAtom);
+    const editorValue = jotaiStore.get(editorValueAtom);
+    const referenceSpec = jotaiStore.get(assignmentAssessmentReferenceSpecAtom);
+
     const language = jotaiStore.get(languageAtom);
     let permalink = jotaiStore.get(permalinkAtom);
     const enableLsp = jotaiStore.get(enableLspAtom);
@@ -541,9 +543,18 @@ async function executeAssessAssignment() {
     let response: any = null;
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
     try {
-        response = await saveCodeAndRefreshHistory(hiddenFieldValue, language.short, permalink.permalink || null, metadata);
-        if (response) {
+        response = await saveCodeAndRefreshHistory(editorValue, language.short, null, referenceSpec, metadata);
+        if (response && response.data) {
             jotaiStore.set(permalinkAtom, response.data);
+        } else {
+            // Defensive: if saving failed or backend returned unexpected payload,
+            // avoid continuing and surface a user friendly message.
+            jotaiStore.set(
+                outputAtom,
+                `; Unable to save specifications before assessment. Backend did not return a permalink.`
+            );
+            jotaiStore.set(isExecutingAtom, false);
+            return;
         }
     } catch (error: any) {
         jotaiStore.set(
@@ -559,27 +570,12 @@ async function executeAssessAssignment() {
         // Backend returns: { result: string, redundant_lines: array }
         // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
         const result: string = res.result ?? res[0] ?? '';
-        const redundantLines: any[] = res.redundant_lines ?? res[1] ?? [];
         console.log(result)
 
         if (result.includes('(error')) {
             jotaiStore.set(outputAtom, result);
             jotaiStore.set(smtModelAtom, { result: result, error: true });
             jotaiStore.set(lineToHighlightAtom, getLineToHighlight(result, language.id) || []);
-            jotaiStore.set(isExecutingAtom, false);
-            return;
-        }
-        if (redundantLines && redundantLines.length > 0) {
-            __redundantLinesToRemove = redundantLines;
-            jotaiStore.set(lineToHighlightAtom, redundantLines);
-
-            const msg =
-                result +
-                `; --------------------------------\n; Your script contains redundant assertions (see highlighted lines).\n; Do you want to remove them?` +
-                `\n<button onclick="__commentRedundantAssertions()">Comment out</button> ` +
-                `<button onclick="__removeRedundantAssertions()">Remove</button>`;
-            jotaiStore.set(outputAtom, msg);
-            jotaiStore.set(smtModelAtom, { result: msg });
             jotaiStore.set(isExecutingAtom, false);
             return;
         }
@@ -613,7 +609,7 @@ async function executeGenerateAssignment() {
     let response: any = null;
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
     try {
-        response = await saveCodeAndRefreshHistory(referenceSpec, language.short, permalink.permalink || null, metadata);
+        response = await saveCodeAndRefreshHistory(referenceSpec, language.short, permalink.permalink || null, null, metadata);
         if (response) {
             jotaiStore.set(permalinkAtom, response.data);
             jotaiStore.set(assignmentAssessmentReferenceSpecAtom, referenceSpec);

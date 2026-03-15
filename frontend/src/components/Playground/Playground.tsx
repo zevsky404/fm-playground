@@ -120,9 +120,10 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
                 generated,
                 "smt",
                 null,
+                null,
                 {ls:false}
             ).then((response) => {
-                jotaiStore.set(permalinkAtom, response.data);
+                jotaiStore.set(permalinkAtom, response?.data);
             });
             localStorage.removeItem("generatedAssignment");
         }
@@ -141,7 +142,8 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
     const loadCode = async (check: string, permalink: string) => {
         try {
             const res = await getCodeByParmalink(check, permalink);
-            setEditorValue(res.code);
+            const code = Array.isArray(res.code) ? res.code[0] : res.code;
+            setEditorValue(code);
 
             // If this is a diff mode URL, also load the comparison code
             if (check.endsWith('Diff')) {
