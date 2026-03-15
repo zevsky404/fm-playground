@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from markdown_it.rules_block import reference
 from pydantic import BaseModel
 from redis_cache import RedisCache
-from z3 import SolverFor, Solver
+from z3 import SolverFor, Solver, And, Not
 from utils.helper import get_logic_from_smt2
 
 from smt_redundancy.explain_redundancy import (
@@ -73,55 +73,38 @@ def log_to_db(p: str, result: str):
     except Exception:
         pass
 
-def extract_assertions(spec: str):
-    """
-    Return (assertions_list, spec_without_assertions).
-    This scans the SMT-LIB script for top-level '(assert ...)'
-    and extracts them while preserving the rest of the script. It
-    performs a simple balanced-parentheses scan and is resilient to
-    parentheses inside strings and nested expressions.
-    """
-    assertions = []
-    i = 0
-    n = len(spec)
-    # Work on a mutable copy
-    s = spec
-    while True:
-        idx = s.find("(assert", i)
-        if idx == -1:
-            break
-        # Find the start of the assertion (the '(' at idx)
-        start = idx
-        j = start
-        depth = 0
-        in_string = False
-        end = None
-        while j < n:
-            ch = s[j]
-            # Handle string delimiters to avoid counting parentheses inside strings
-            if ch == '"' and (j == 0 or s[j - 1] != "\\"):
-                in_string = not in_string
-            if not in_string:
-                if ch == '(':
-                    depth += 1
-                elif ch == ')':
-                    depth -= 1
-                    if depth == 0:
-                        end = j + 1
-                        break
-            j += 1
-        if end is None:
-            # Unbalanced parentheses: take to end
-            end = n
-        assertion = s[start:end]
-        assertions.append(assertion)
-        # Remove the assertion from the script, replace with a newline
-        s = s[:start] + "\n" + s[end:]
-        # Reset indices to continue scanning after start
-        i = start
-        n = len(s)
+def check_soundness(code, assertions_teacher):
+    logic = get_logic_from_smt2(code)
+    solver_student = SolverFor(logic) if logic else Solver()
+    solver_student.from_string(code)
 
-    return assertions, s
+    teacher_formula = And(*assertions_teacher)
+
+    solver_student.add(Not(teacher_formula))
+
+    print(solver_student.assertions())
+
+    result = solver_student.check()
+
+    print(result)
+    print(solver_student.model())
+
+def check_completeness(code, assertions_student, assertions_teacher):
+    logic = get_logic_from_smt2(code)
+    solver = SolverFor(logic) if logic else Solver()
+
+    teacher_formula = And(*assertions_teacher)
+    student_formula = And(*assertions_student)
+
+    solver.add(teacher_formula)
+    solver.add(Not(student_formula))
+
+    print(solver.assertions())
+
+    result = solver.check()
+
+    print(result)
+    print(solver.model())
 
 def run_z3(code: str, check_redundancy: bool = False) -> str:
     if is_redis_available():
@@ -154,6 +137,7 @@ def execute_z3(check: str, p: str):
     code = get_code_by_permalink(check, p)
     try:
         result, redundant_lines = execution_queue(code)
+        print(result)
         log_to_db(
             p,
             json.dumps(
@@ -326,13 +310,24 @@ def assess_assignment(check: str, p: str):
     except Exception:
         raise HTTPException(status_code=404, detail="Permalink not found")
 
-    reference_assertions = extract_assertions(teacher_reference)[0]
-    assertions_str = '\n'.join(reference_assertions)
+    print(code)
+    print(teacher_reference)
 
-    logic = get_logic_from_smt2(assertions_str) or get_logic_from_smt2(code)
-    solver = SolverFor(logic) if logic else Solver()
-    solver.from_string(assertions_str)
-    solver.assertions()
+    logic = get_logic_from_smt2(teacher_reference)
+    solver_teacher = SolverFor(logic) if logic else Solver()
+    solver_teacher.from_string(teacher_reference)
+    assertions_teacher = solver_teacher.assertions()
+    print(assertions_teacher)
+
+    logic = get_logic_from_smt2(code)
+    solver_student = SolverFor(logic) if logic else Solver()
+    solver_student.from_string(code)
+    assertions_student = solver_student.assertions()
+    print(assertions_student)
+
+    sound = check_soundness(code, assertions_teacher)
+    complete = check_completeness(code, assertions_student,  assertions_teacher)
+    #equivalence = check_equivalence()
 
     return {"code": code, "reference": teacher_reference}
 
@@ -342,19 +337,19 @@ def assess_assignment(check: str, p: str):
 def generate_assignment(check: str, p: str):
     code = get_code_by_permalink(check, p)
     try:
-        # Extract assertions from the SMT-LIB script and produce a code string
-        # without assertions
-        assertions, code_no_assertions = extract_assertions(code)
+        # Determine logic from the script
+        logic =  get_logic_from_smt2(code)
 
-        # Determine logic from the script without assertions first (safer),
-        # fall back to original script if needed.
-        logic = get_logic_from_smt2(code_no_assertions) or get_logic_from_smt2(code)
-
-        # Create a solver and load the full script (including assertions) so
-        # behavior remains consistent with prior implementation.
+        # Create a solver and load the script
         solver = SolverFor(logic) if logic else Solver()
-        solver.from_string(code_no_assertions)
-        solver.assertions()
+        solver.from_string(code)
+        z3_assertions = solver.assertions()
+
+        assertions = [f"(assert ({a.sexpr()}))" for a in z3_assertions]
+
+        code_no_assertions = code
+        for a in assertions:
+            code_no_assertions = code_no_assertions.replace(a, "")
 
         try:
             if assertions:
