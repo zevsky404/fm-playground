@@ -76,12 +76,11 @@ def log_to_db(p: str, result: str):
 def check_soundness(code, assertions_student, assertions_teacher):
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
-    solver.from_string(code)
 
     teacher_formula = And(*assertions_teacher) if len(assertions_teacher) > 1 else assertions_teacher[0]
     student_formula = And(*assertions_student) if len(assertions_student) > 1 else assertions_student[0]
 
-    solver.add(Implies(student_formula, teacher_formula))
+    solver.add(student_formula, Not(teacher_formula))
 
     print(solver.assertions())
 
@@ -89,7 +88,8 @@ def check_soundness(code, assertions_student, assertions_teacher):
     print(str(result))
 
     if str(result) == 'sat':
-        return {'result': str(result), 'model': ''}
+        print(solver.model())
+        return {'result': str(result), 'model': str(solver.model())}
     else:
         return {'result': str(result), 'model': ''}
 
@@ -98,12 +98,11 @@ def check_soundness(code, assertions_student, assertions_teacher):
 def check_completeness(code, assertions_student, assertions_teacher):
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
-    solver.from_string(code)
 
     teacher_formula = And(*assertions_teacher) if len(assertions_teacher) > 1 else assertions_teacher[0]
     student_formula = And(*assertions_student) if len(assertions_student) > 1 else assertions_student[0]
 
-    solver.add(Implies(teacher_formula, student_formula))
+    solver.add(teacher_formula, Not(student_formula))
 
     print(solver.assertions())
 
@@ -111,7 +110,8 @@ def check_completeness(code, assertions_student, assertions_teacher):
     print(result)
 
     if str(result) == 'sat':
-        return {'result': str(result), 'model': ''}
+        print(solver.model())
+        return {'result': str(result), 'model': str(solver.model())}
     else:
         return {'result': str(result), 'model': ''}
 
@@ -336,7 +336,7 @@ def assess_assignment(check: str, p: str):
 
     sound = check_soundness(code, assertions_student, assertions_teacher)
     complete = check_completeness(code, assertions_student,  assertions_teacher)
-    equivalence = True if sound['result'] == 'sat' and complete['result'] == 'sat' else False
+    equivalence = True if sound['result'] == 'unsat' and complete['result'] == 'unsat' else False
 
     return {'soundness': sound, 'completeness': complete, 'equivalence': equivalence}
 

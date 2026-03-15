@@ -577,17 +577,15 @@ async function executeAssessAssignment() {
         const result = await fetchAssessAssignment(response?.data);
         console.log(result);
 
-        if (result['soundness']['result'] != "sat") {
+        if (result['soundness']['result'] != "unsat") {
             jotaiStore.set(isExecutingAtom, false);
-            jotaiStore.set(outputAtom, 'Student solution is not sound.');
-            jotaiStore.set(smtModelAtom, result['soundness']['model']);
+            jotaiStore.set(outputAtom, `Student solution is not sound. It allows more models than the reference.\nA example that would not be allowed by the reference would be: ${result['soundness']['model']}`);
             return;
         }
 
-        if (result['completeness']['result'] != "sat") {
+        if (result['completeness']['result'] != "unsat") {
             jotaiStore.set(isExecutingAtom, false);
-            jotaiStore.set(outputAtom, 'Student solution is not complete.');
-            jotaiStore.set(smtModelAtom, result['completeness']['model']);
+            jotaiStore.set(outputAtom, `Student solution is not complete. It allows less models than the reference.\nA example that would be allowed by the reference would be: ${result['completeness']['model']}`);
             return;
         }
 
