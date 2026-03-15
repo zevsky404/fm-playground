@@ -184,6 +184,16 @@ async function fetchGenerateAssignment(permalink: Permalink) {
     }
 }
 
+async function fetchAssessAssignment(permalink: Permalink) {
+    let url = `/smt/smt/assess-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 /**
  * Execute Z3 on the server.
  * Handles redundant assertions if returned by the server.
@@ -543,7 +553,7 @@ async function executeAssessAssignment() {
     let response: any = null;
     const metadata = { ls: enableLsp, command: smtCmdOption.value };
     try {
-        response = await saveCodeAndRefreshHistory(editorValue, language.short, null, referenceSpec, metadata);
+        response = await saveCodeAndRefreshHistory(editorValue, language.short, permalink.permalink, referenceSpec, metadata);
         if (response && response.data) {
             jotaiStore.set(permalinkAtom, response.data);
         } else {
@@ -564,13 +574,12 @@ async function executeAssessAssignment() {
     }
 
     try {
-        const res = await fetchZ3Result(response?.data);
 
-        // Handle new response format from backend
+        const res = await fetchAssessAssignment(response?.data);
+
         // Backend returns: { result: string, redundant_lines: array }
         // Use nullish coalescing and provide safe defaults so empty strings/arrays are preserved
-        const result: string = res.result ?? res[0] ?? '';
-        console.log(result)
+        const result: string = res.reference;
 
         if (result.includes('(error')) {
             jotaiStore.set(outputAtom, result);

@@ -89,6 +89,7 @@ def save():
     current_time = datetime.now(pytz.utc)
     data = request.get_json()
     check_type = data.get("check")
+    reference = data.get("reference")
 
     # Support both single 'code' and multiple 'codes' payloads.
     # Frontend may POST { codes: [code1, code2], check: ..., parent: ..., meta: ... }
@@ -142,6 +143,7 @@ def save():
             meta=metadata,
             code_id=code_id,
             user_id=user_id,
+            reference=reference,
         )
         db.session.add(new_data)
         db.session.commit()
@@ -167,8 +169,13 @@ def get_code():
         .first_or_404()
     )
     data_id = Data.query.filter_by(permalink=p).first().id
+    data_row = Data.query.filter_by(permalink=p).first()
     response = make_response(
-        jsonify({"code": code_data.code, "code_id": code_data.id, "data_id": data_id}),
+        jsonify({
+            "code": code_data.code,
+            "code_id": code_data.id,
+            "data_id": data_id,
+            "reference" : data_row.reference if data_row else None}),
         200,
     )
     return response

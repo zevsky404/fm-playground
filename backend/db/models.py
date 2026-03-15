@@ -12,6 +12,7 @@ class Data(db.Model):
     check_type = db.Column(db.String())
     permalink = db.Column(db.String())
     meta = db.Column(db.String())
+    reference = db.Column(db.String(), nullable=True)
 
     code_id = db.Column(db.Integer, db.ForeignKey("code.id"), nullable=False)
     user_id = db.Column(db.String, db.ForeignKey("users.id"), nullable=True)
