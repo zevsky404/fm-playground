@@ -643,6 +643,12 @@ async function executeGenerateAssignment() {
 
         jotaiStore.set(outputAtom, outMsg);
         jotaiStore.set(smtModelAtom, { result: outMsg });
+        const permalink = jotaiStore.get(permalinkAtom);
+        window.history.replaceState(
+            null,
+            "",
+            `/teacher?check=${permalink.check}&p=${permalink.permalink}`
+        )
 
         localStorage.setItem("generatedAssignment", codeWithoutAssertions);
         window.open(`http://localhost:5173/`, "_blank");
