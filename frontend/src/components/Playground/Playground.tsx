@@ -19,7 +19,7 @@ import {
     originalCodeAtom,
     diffComparisonCodeAtom,
     diffComparisonHistoryIdAtom,
-    assignmentAssessmentReferenceSpecAtom
+    assignmentAssessmentReferenceSpecAtom, jotaiStore
 } from '@/atoms';
 import InputArea from '@/components/Playground/InputArea';
 import OutputArea from '@/components/Playground//OutputArea';
@@ -28,6 +28,7 @@ import ResizableSplitter from '@/components/Utils/ResizableSplitter';
 import '@/assets/style/Playground.css';
 
 import type { LanguageProps } from './Tools';
+import {saveCodeAndRefreshHistory} from "@/utils/codeExecutionUtils.ts";
 
 interface PlaygroundProps {
     editorTheme: string;
@@ -108,6 +109,25 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
         // Update the URL when permalink changes
         navigate(permalink.permalink ? `/?check=${permalink.check}&p=${permalink.permalink}` : `/?check=${checkParam}`);
     }, [permalink, navigate]);
+
+    useEffect(() => {
+        const generated = localStorage.getItem("generatedAssignment");
+
+        if (generated) {
+            jotaiStore.set(editorValueAtom, generated);
+
+            saveCodeAndRefreshHistory(
+                generated,
+                "smt",
+                null,
+                {ls:false}
+            ).then((response) => {
+                jotaiStore.set(permalinkAtom, response.data);
+            });
+            localStorage.removeItem("generatedAssignment");
+        }
+
+    }, []);
 
     /**
      * Update the URL with ``check`` type when language changes.
