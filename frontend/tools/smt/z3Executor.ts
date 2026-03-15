@@ -616,6 +616,7 @@ async function executeGenerateAssignment() {
         response = await saveCodeAndRefreshHistory(referenceSpec, language.short, permalink.permalink || null, metadata);
         if (response) {
             jotaiStore.set(permalinkAtom, response.data);
+            jotaiStore.set(assignmentAssessmentReferenceSpecAtom, referenceSpec);
         }
     } catch (error: any) {
         jotaiStore.set(
