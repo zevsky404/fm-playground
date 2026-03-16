@@ -665,6 +665,13 @@ async function executeGenerateAssignment() {
     }
 
     try {
+        const syntaxCheck = await validateSmtSyntax(response?.data)
+        if (!syntaxCheck.valid) {
+            console.log(syntaxCheck);
+            jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, syntaxCheck.message);
+            return;
+        }
         // Call the generate-assignment endpoint which returns assertions + code without assertions
         const res = await fetchGenerateAssignment(response?.data);
 
