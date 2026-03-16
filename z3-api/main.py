@@ -364,7 +364,7 @@ def generate_assignment(check: str, p: str):
                     stack = 0
                 continue
 
-            lines_no_assertions.append(line)
+            lines_no_assertions.append(line.strip())
 
         code_no_assertions = "\n".join(l for l in lines_no_assertions if l.strip())
 
