@@ -37,30 +37,35 @@ def test_functionalities():
             solver_student.from_string(student)
             assertions_student = solver_student.assertions()
 
-            if test["error"]:
-                f"✘ Test {test_id} failed: Expected a syntax/logic error but none occurred."
+            if (str(solver_student.check()) == "unsat") and error:
+                print(f"✓ Test {test_id} caught expected logic inconsistency")
+            elif error:
+                print(f"✘ Test {test_id} failed: Expected a syntax/logic error but none occurred.")
                 continue
 
-            sound = check_soundness(student, assertions_student, assertions_teacher)["result"]  == "unsat"
+            sound = check_soundness(student, assertions_student, assertions_teacher)["result"] == "unsat"
             assert sound == expected_sound, \
-                f"Soundness missmatch in test {test_id}"
+                print(f"Soundness missmatch in test {test_id}")
 
             complete = check_completeness(student, assertions_student, assertions_teacher)["result"] == "unsat"
             assert complete == expected_complete, \
-                f"Soundness missmatch in test {test_id}"
-
-            cleand_reference = remove_assertions_from_reference(teacher)
-
-            assert cleand_reference == reference_no_assertions, \
-                f"Assertion removal failed in test {test_id}"
-
-            f"✓ Test {test_id} passed"
+                print(f"Soundness missmatch in test {test_id}")
 
         except Exception as e:
             if error:
-                f"✓ Test {test_id} caught expected error: {str(e)}"
+                print(f"✓ Test {test_id} caught expected error: {str(e)}")
             else:
-                f"✘ Test {test_id} crashed unexpectedly: {e}"
+                print(f"✘ Test {test_id} crashed unexpectedly: {e}")
+
+
+        cleand_reference = remove_assertions_from_reference(teacher)
+
+        assert cleand_reference == reference_no_assertions, \
+            print(f"Assertion removal failed in test {test_id}")
+
+        print(f"✓ Test {test_id} passed")
+
+
 
 
 

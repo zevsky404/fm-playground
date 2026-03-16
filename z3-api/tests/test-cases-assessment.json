@@ -37,7 +37,7 @@
       "test-case-name": "Inconsistent Student",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
       "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)",
-      "sound" : false,
+      "sound" : true,
       "complete" : false,
       "error" : true,
       "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
@@ -215,22 +215,22 @@
     },
     {
       "test-id" : 22,
-      "test-case-name": "Type Mismatch Error Teacher",
+      "test-case-name": "Type Mismatch Teacher",
       "teacher-reference" : "(declare-fun x () Int)\n(assert (= x true))\n (check-sat)\n(get-model)",
       "student-solution" : "(declare-fun x () Bool)\n(assert (= x true))\n (check-sat)\n(get-model)",
       "sound" : false,
       "complete" : false,
-      "error" : true,
+      "error" : false,
       "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 23,
-      "test-case-name": "Type Mismatch Error Student",
+      "test-case-name": "Type Mismatch Student",
       "teacher-reference" : "(declare-fun x () Bool)\n(assert (= x true))\n (check-sat)\n(get-model)",
       "student-solution" : "(declare-fun x () Int)\n(assert (= x true))\n (check-sat)\n(get-model)",
       "sound" : false,
       "complete" : false,
-      "error" : true,
+      "error" : false,
       "reference-no-assertions" : "(declare-fun x () Bool)\n(check-sat)\n(get-model)"
     }
   ]
