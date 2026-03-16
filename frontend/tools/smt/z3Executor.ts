@@ -611,7 +611,6 @@ async function executeAssessAssignment() {
     try {
         const syntaxCheck = await validateSmtSyntax(response?.data)
         if (!syntaxCheck.valid) {
-            console.log(syntaxCheck);
             jotaiStore.set(isExecutingAtom, false);
             jotaiStore.set(outputAtom, syntaxCheck.message);
             return;
@@ -642,7 +641,6 @@ async function executeAssessAssignment() {
             jotaiStore.set(outputAtom, `Student solution is not complete. It allows less models than the reference.\nA example that would be allowed by the reference would be: ${result['completeness']['model']}`);
             return;
         }
-
 
 
     } catch (error) {
@@ -694,7 +692,6 @@ async function executeGenerateAssignment() {
     try {
         const syntaxCheck = await validateSmtSyntax(response?.data)
         if (!syntaxCheck.valid) {
-            console.log(syntaxCheck);
             jotaiStore.set(isExecutingAtom, false);
             jotaiStore.set(outputAtom, syntaxCheck.message);
             return;

@@ -102,6 +102,18 @@
       "test-case-name": "No teacher assertions (commented out)",
       "teacher-reference" : "(declare-fun x () Int)\n    ;(assert (> x 5))\n    (check-sat)\n    (get-model)",
       "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)"
+    },
+    {
+      "test-id" : 18,
+      "test-case-name": "Syntax error Teacher",
+      "teacher-reference" : "(declare-fun x () Int)\n (assert (< x ;5))\n (check-sat)\n(get-model)",
+      "student-solution" : ""
+    },
+    {
+      "test-id" : 19,
+      "test-case-name": "Multiple asserts in one line Teacher",
+      "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5)) (assert (> x 0))\n (check-sat)\n (get-model)",
+      "student-solution" : "(declare-fun x () Int)\n (assert (< x 5))\n (assert (> x 0))\n (check-sat)\n(get-model)"
     }
   ]
 }
