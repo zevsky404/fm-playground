@@ -111,6 +111,9 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
         navigate(permalink.permalink ? `/?check=${permalink.check}&p=${permalink.permalink}` : `/?check=${checkParam}`);
     }, [permalink, navigate]);
 
+    /**
+     * Load generated assignment code, save and create permalink
+     */
     useEffect(() => {
         const generated = localStorage.getItem("generatedAssignment");
 
