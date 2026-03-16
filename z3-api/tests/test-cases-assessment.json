@@ -5,127 +5,233 @@
       "test-id" : 1,
       "test-case-name" : "Trivial Case: sound, complete, equivalent",
       "teacher-reference" : "(declare-fun x () Int)\n   (assert (> x 5))\n    (check-sat)\n   (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n   (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n   (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
+
     },
     {
       "test-id" : 2,
-      "test-case-name": "Sound but incomplete",
+      "test-case-name": "Complete but unsound",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 10))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
+      "sound" : false,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 3,
-      "test-case-name": "Complete but unsound",
+      "test-case-name": "Sound but incomplete",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 10))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 10))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : false,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 4,
       "test-case-name": "Inconsistent Student",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)",
+      "sound" : false,
+      "complete" : false,
+      "error" : true,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
+
     },
     {
       "test-id" : 5,
       "test-case-name": "Neither sound nor Complete",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 10))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 10))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 7))\n    (assert (< x 12))\n    (check-sat)\n    (get-model)",
+      "sound" : false,
+      "complete" : false,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 6,
-      "test-case-name": "More then one variable (sound not complete)",
+      "test-case-name": "More then one variable (Unsound, complete)",
       "teacher-reference" : "(declare-fun x () Int)\n    (declare-fun y () Int)\n    (assert (> x y))\n    (assert (> y 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (declare-fun y () Int)\n    (assert (> x y))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (declare-fun y () Int)\n    (assert (> x y))\n    (check-sat)\n    (get-model)",
+      "sound" : false,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(declare-fun y () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 7,
       "test-case-name": "Bitvector (equivalent)",
       "teacher-reference" : "(declare-fun x () (_ BitVec 8))\n    (assert (= x #x0F))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () (_ BitVec 8))\n    (assert (= x #x0F))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () (_ BitVec 8))\n    (assert (= x #x0F))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () (_ BitVec 8))\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 8,
       "test-case-name": "Trivial Case: removal of assertions sound, complete, equivalent",
       "teacher-reference" : "(declare-fun x () Int)\n    (     assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 9,
-      "test-case-name": "Initial Example (not sound and not complete)",
+      "test-case-name": "Initial Example (sound and not complete)",
       "teacher-reference" : "(declare-const h Int)\n    (declare-const e Int)\n    (declare-const l Int)\n    (declare-const o Int)\n    (declare-const w Int)\n    (declare-const r Int)\n    (declare-const d Int)\n    \n    (declare-const result Int)  \n    (and \n        (= \n            result \n            (+ h e l l o) \n                \n        )\n        (= \n            result \n            (+ w o r l d)\n                \n        )\n        (= \n            result\n            22\n        )\n        (and \n             (distinct h e l o w r d) \n             (< 0 h) \n             (< 0 e)\n             (< 0 l) \n             (< 0 o) \n             (< 0 w) \n             (< 0 r) \n             (< 0 d)\n             (> 10 h)\n             (> 10 e)\n             (> 10 l)\n             (> 10 o)\n             (> 10 w)\n             (> 10 r)\n             (> 10 d)\n        )\n    )\n    \n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-const h Int)\n    (declare-const e Int)\n    (declare-const l Int)\n    (declare-const o Int)\n    (declare-const w Int)\n    (declare-const r Int)\n    (declare-const d Int)\n    \n    (declare-const result Int)  \n    (assert (= result (+ h e l l o w o r l d)))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-const h Int)\n    (declare-const e Int)\n    (declare-const l Int)\n    (declare-const o Int)\n    (declare-const w Int)\n    (declare-const r Int)\n    (declare-const d Int)\n    \n    (declare-const result Int)  \n    (assert (= result (+ h e l l o w o r l d)))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : false,
+      "error" : false,
+      "reference-no-assertions" : "(declare-const h Int)\n(declare-const e Int)\n(declare-const l Int)\n(declare-const o Int)\n(declare-const w Int)\n(declare-const r Int)\n(declare-const d Int)\n(declare-const result Int)\n(and\n(=\nresult\n(+ h e l l o)\n)\n(=\nresult\n(+ w o r l d)\n)\n(=\nresult\n22\n)\n(and\n(distinct h e l o w r d)\n(< 0 h)\n(< 0 e)\n(< 0 l)\n(< 0 o)\n(< 0 w)\n(< 0 r)\n(< 0 d)\n(> 10 h)\n(> 10 e)\n(> 10 l)\n(> 10 o)\n(> 10 w)\n(> 10 r)\n(> 10 d)\n)\n)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 10,
       "test-case-name": "Teacher is UNSAT (equivalent student solution)",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 11,
       "test-case-name": "Equivalent Arithmetic formulation",
       "teacher-reference" : "(declare-fun x () Int)\n    (declare-fun y () Int)\n    (assert (= (+ x y) 10))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (declare-fun y () Int)\n    (assert (= y (- 10 x)))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (declare-fun y () Int)\n    (assert (= y (- 10 x)))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(declare-fun y () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 12,
       "test-case-name": "Example with quantifier (not sound)",
       "teacher-reference" : "(declare-fun f (Int) Int)\n    (assert (forall ((x Int)) (> (f x) 0)))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun f (Int) Int)\n    (assert (> (f 0) 0))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun f (Int) Int)\n    (assert (> (f 0) 0))\n    (check-sat)\n    (get-model)",
+      "sound" : false,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun f (Int) Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 13,
       "test-case-name": "Logical Structures (not complete)",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (or (= x 1) (= x 2)))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (= x 1))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (= x 1))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : false,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 14,
       "test-case-name": "Redundant Constraint (equivalent)",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (> x 0))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (> x 0))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 15,
       "test-case-name": "Different syntax but equivalent",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (not (<= x 5)))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (not (<= x 5)))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 16,
       "test-case-name": "No student assertions (commented out)",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    ;(assert (> x 5))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    ;(assert (> x 5))\n    (check-sat)\n    (get-model)",
+      "sound" : false,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 17,
       "test-case-name": "No teacher assertions (commented out)",
       "teacher-reference" : "(declare-fun x () Int)\n    ;(assert (> x 5))\n    (check-sat)\n    (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (check-sat)\n    (get-model)",
+      "sound" : true,
+      "complete" : false,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n;(assert (> x 5))\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 18,
       "test-case-name": "Syntax error Teacher",
       "teacher-reference" : "(declare-fun x () Int)\n (assert (< x ;5))\n (check-sat)\n(get-model)",
-      "student-solution" : ""
+      "student-solution" : "",
+      "sound" : false,
+      "complete" : false,
+      "error" : true,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 19,
       "test-case-name": "Multiple asserts in one line Teacher",
       "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5)) (assert (> x 0))\n (check-sat)\n (get-model)",
-      "student-solution" : "(declare-fun x () Int)\n (assert (< x 5))\n (assert (> x 0))\n (check-sat)\n(get-model)"
+      "student-solution" : "(declare-fun x () Int)\n (assert (< x 5))\n (assert (> x 0))\n (check-sat)\n(get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 20,
       "test-case-name": "Syntax error Student",
       "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5))\n (check-sat)\n(get-model)",
-      "student-solution" : "(declare-fun x () Int)\n (assert (< x ;5))\n (check-sat)\n(get-model)"
+      "student-solution" : "(declare-fun x () Int)\n (assert (< x ;5))\n (check-sat)\n(get-model)",
+      "sound" : false,
+      "complete" : false,
+      "error" : true,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 21,
       "test-case-name": "Multiple asserts in one line Student",
       "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5))\n (assert (> x 0))\n (check-sat)\n(get-model)",
-      "student-solution" : "(declare-fun x () Int)\n (assert (< x 5)) (assert (> x 0))\n (check-sat)\n (get-model)"
+      "student-solution" : "(declare-fun x () Int)\n (assert (< x 5)) (assert (> x 0))\n (check-sat)\n (get-model)",
+      "sound" : true,
+      "complete" : true,
+      "error" : false,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
+    },
+    {
+      "test-id" : 22,
+      "test-case-name": "Type Mismatch Error Teacher",
+      "teacher-reference" : "(declare-fun x () Int)\n(assert (= x true))\n (check-sat)\n(get-model)",
+      "student-solution" : "(declare-fun x () Bool)\n(assert (= x true))\n (check-sat)\n(get-model)",
+      "sound" : false,
+      "complete" : false,
+      "error" : true,
+      "reference-no-assertions" : "(declare-fun x () Int)\n(check-sat)\n(get-model)"
+    },
+    {
+      "test-id" : 23,
+      "test-case-name": "Type Mismatch Error Student",
+      "teacher-reference" : "(declare-fun x () Bool)\n(assert (= x true))\n (check-sat)\n(get-model)",
+      "student-solution" : "(declare-fun x () Int)\n(assert (= x true))\n (check-sat)\n(get-model)",
+      "sound" : false,
+      "complete" : false,
+      "error" : true,
+      "reference-no-assertions" : "(declare-fun x () Bool)\n(check-sat)\n(get-model)"
     }
   ]
 }

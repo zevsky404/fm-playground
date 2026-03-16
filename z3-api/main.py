@@ -73,6 +73,7 @@ def log_to_db(p: str, result: str):
     except Exception:
         pass
 
+
 def get_formula(assertions):
     if not assertions:
         return BoolVal(True)
@@ -105,7 +106,6 @@ def check_soundness(code, assertions_student, assertions_teacher):
         return {'result': str(result), 'model': ''}
 
 
-
 def check_completeness(code, assertions_student, assertions_teacher):
     """
     Using the variable declarations from the template, makes a completeness check of the student solution
@@ -128,6 +128,52 @@ def check_completeness(code, assertions_student, assertions_teacher):
         return {'result': str(result), 'model': str(solver.model())}
     else:
         return {'result': str(result), 'model': ''}
+
+
+def extract_assertions(code):
+    # Determine logic from the script
+    logic = get_logic_from_smt2(code)
+
+    # Create a solver and load the script
+    solver = SolverFor(logic) if logic else Solver()
+    solver.from_string(code)
+    z3_assertions = solver.assertions()
+
+    assertions = [
+        f"(assert ({a.sexpr()}))" if not (a.sexpr().startswith("(") and a.sexpr().endswith(")"))
+        else f"(assert {a.sexpr()})"
+        for a in z3_assertions
+    ]
+    return assertions
+
+
+def remove_assertions_from_reference(code):
+    # String manipulation and parsing to remove all assertions from the code
+    lines_no_assertions = []
+    stack = 0
+    is_skipping = False
+
+    for line in code.splitlines():
+        tokens = line.strip().lower().replace('(', '( ', 1).split()
+
+        if not is_skipping and len(tokens) >= 2:
+            if tokens[0] == '(' and tokens[1] == "assert":
+                is_skipping = True
+
+        if is_skipping:
+            stack += line.count("(")
+            stack -= line.count(")")
+
+            if stack <= 0:
+                is_skipping = False
+                stack = 0
+            continue
+
+        lines_no_assertions.append(line.strip())
+
+    code_no_assertions = "\n".join(l for l in lines_no_assertions if l.strip())
+    return code_no_assertions
+
 
 def run_z3(code: str, check_redundancy: bool = False) -> str:
     if is_redis_available():
@@ -291,6 +337,7 @@ def model_iteration(check: str, p: str):
         log_to_db(p, json.dumps({"analysis": "model_iteration", "error": str(e)}))
         raise HTTPException(status_code=500, detail="Error running code: " + str(e))
 
+
 @app.get("/smt/next/", response_model=None)
 def get_next_model_from_cache(specId: str, p: str):
     try:
@@ -316,6 +363,7 @@ def get_next_model_from_cache(specId: str, p: str):
         raise HTTPException(
             status_code=500, detail=f"Error retrieving next witness: {str(e)}"
         )
+
 
 @app.get("/smt/assess-assignment/", response_model=None)
 def assess_assignment(check: str, p: str):
@@ -366,44 +414,8 @@ def generate_assignment(check: str, p: str):
     """
     code = get_code_by_permalink(check, p)
     try:
-        # Determine logic from the script
-        logic =  get_logic_from_smt2(code)
-
-        # Create a solver and load the script
-        solver = SolverFor(logic) if logic else Solver()
-        solver.from_string(code)
-        z3_assertions = solver.assertions()
-
-        assertions = [
-            f"(assert ({a.sexpr()}))" if not (a.sexpr().startswith("(") and a.sexpr().endswith(")"))
-            else f"(assert {a.sexpr()})"
-            for a in z3_assertions
-        ]
-
-        # String manipulation and parsing to remove all assertions from the code
-        lines_no_assertions = []
-        stack = 0
-        is_skipping = False
-
-        for line in code.splitlines():
-            tokens = line.strip().lower().replace('(', '( ', 1).split()
-
-            if not is_skipping and len(tokens) >= 2:
-                if tokens[0] == '(' and tokens[1] == "assert":
-                    is_skipping = True
-
-            if is_skipping:
-                stack += line.count("(")
-                stack -= line.count(")")
-
-                if stack <= 0:
-                    is_skipping = False
-                    stack = 0
-                continue
-
-            lines_no_assertions.append(line.strip())
-
-        code_no_assertions = "\n".join(l for l in lines_no_assertions if l.strip())
+        assertions = extract_assertions(code)
+        code_no_assertions = remove_assertions_from_reference(code)
 
         try:
             if assertions:
