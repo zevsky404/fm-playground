@@ -193,6 +193,22 @@ async function fetchAssessAssignment(permalink: Permalink) {
     }
 }
 
+async function validateSmtSyntax(permalink: Permalink) {
+    try {
+        const res = await fetchZ3Result(permalink);
+
+        // Backend returns: { result: string, redundant_lines: array }
+        const result: string = res.result ?? res[0] ?? '';
+
+        if (result.includes('(error')) {
+            return {valid: false, message: result};
+        }
+        return { valid: true };
+    } catch (err: any) {
+        return { valid: false, message: err.message };
+    }
+}
+
 /**
  * Execute Z3 on the server.
  * Handles redundant assertions if returned by the server.
@@ -573,6 +589,13 @@ async function executeAssessAssignment() {
     }
 
     try {
+        const syntaxCheck = await validateSmtSyntax(response?.data)
+        if (!syntaxCheck.valid) {
+            console.log(syntaxCheck);
+            jotaiStore.set(isExecutingAtom, false);
+            jotaiStore.set(outputAtom, syntaxCheck.message);
+            return;
+        }
         // Backend returns: { soundness: {result, model}, completeness: {result, model}, equivalence: bool }
         const result = await fetchAssessAssignment(response?.data);
 

@@ -269,7 +269,6 @@ def model_iteration(check: str, p: str):
         log_to_db(p, json.dumps({"analysis": "model_iteration", "error": str(e)}))
         raise HTTPException(status_code=500, detail="Error running code: " + str(e))
 
-
 @app.get("/smt/next/", response_model=None)
 def get_next_model_from_cache(specId: str, p: str):
     try:
@@ -339,11 +338,37 @@ def generate_assignment(check: str, p: str):
         solver.from_string(code)
         z3_assertions = solver.assertions()
 
-        assertions = [f"(assert {a.sexpr()})" for a in z3_assertions]
+        assertions = [
+            f"(assert ({a.sexpr()}))" if not (a.sexpr().startswith("(") and a.sexpr().endswith(")"))
+            else f"(assert {a.sexpr()})"
+            for a in z3_assertions
+        ]
 
-        code_no_assertions = code
-        for a in assertions:
-            code_no_assertions = code_no_assertions.replace(a, "")
+        lines_no_assertions = []
+        stack = 0
+        is_skipping = False
+
+        for line in code.splitlines():
+            tokens = line.strip().lower().replace('(', '( ', 1).split()
+
+            if not is_skipping and len(tokens) >= 2:
+                if tokens[0] == '(' and tokens[1] == "assert":
+                    is_skipping = True
+
+            if is_skipping:
+                stack += line.count("(")
+                stack -= line.count(")")
+
+                if stack <= 0:
+                    is_skipping = False
+                    stack = 0
+                continue
+
+            lines_no_assertions.append(line)
+
+        code_no_assertions = "\n".join(l for l in lines_no_assertions if l.strip())
+
+
 
         try:
             if assertions:
