@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from markdown_it.rules_block import reference
 from pydantic import BaseModel
 from redis_cache import RedisCache
-from z3 import SolverFor, Solver, And, Or, Not, Implies
+from z3 import SolverFor, Solver, And, Not, BoolVal
 from utils.helper import get_logic_from_smt2
 
 from smt_redundancy.explain_redundancy import (
@@ -73,12 +73,20 @@ def log_to_db(p: str, result: str):
     except Exception:
         pass
 
+def get_formula(assertions):
+    if not assertions:
+        return BoolVal(True)
+    if len(assertions) == 1:
+        return assertions[0]
+    return And(*assertions)
+
+
 def check_soundness(code, assertions_student, assertions_teacher):
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
 
-    teacher_formula = And(*assertions_teacher) if len(assertions_teacher) > 1 else assertions_teacher[0]
-    student_formula = And(*assertions_student) if len(assertions_student) > 1 else assertions_student[0]
+    teacher_formula = get_formula(assertions_teacher)
+    student_formula = get_formula(assertions_student)
 
     solver.add(student_formula, Not(teacher_formula))
 
@@ -95,8 +103,8 @@ def check_completeness(code, assertions_student, assertions_teacher):
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
 
-    teacher_formula = And(*assertions_teacher) if len(assertions_teacher) > 1 else assertions_teacher[0]
-    student_formula = And(*assertions_student) if len(assertions_student) > 1 else assertions_student[0]
+    teacher_formula = get_formula(assertions_teacher)
+    student_formula = get_formula(assertions_student)
 
     solver.add(teacher_formula, Not(student_formula))
 
