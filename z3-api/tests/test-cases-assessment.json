@@ -57,7 +57,7 @@
     },
     {
       "test-id" : 10,
-      "test-case-name": "Teacher is UNSAT (sound, complete, equivalent)",
+      "test-case-name": "Teacher is UNSAT (equivalent student solution)",
       "teacher-reference" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)",
       "student-solution" : "(declare-fun x () Int)\n    (assert (> x 5))\n    (assert (< x 3))\n    (check-sat)\n    (get-model)"
     },
@@ -114,6 +114,18 @@
       "test-case-name": "Multiple asserts in one line Teacher",
       "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5)) (assert (> x 0))\n (check-sat)\n (get-model)",
       "student-solution" : "(declare-fun x () Int)\n (assert (< x 5))\n (assert (> x 0))\n (check-sat)\n(get-model)"
+    },
+    {
+      "test-id" : 20,
+      "test-case-name": "Syntax error Student",
+      "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5))\n (check-sat)\n(get-model)",
+      "student-solution" : "(declare-fun x () Int)\n (assert (< x ;5))\n (check-sat)\n(get-model)"
+    },
+    {
+      "test-id" : 21,
+      "test-case-name": "Multiple asserts in one line Student",
+      "teacher-reference" : "(declare-fun x () Int)\n (assert (< x 5))\n (assert (> x 0))\n (check-sat)\n(get-model)",
+      "student-solution" : "(declare-fun x () Int)\n (assert (< x 5)) (assert (> x 0))\n (check-sat)\n (get-model)"
     }
   ]
 }
