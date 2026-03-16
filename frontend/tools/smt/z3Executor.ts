@@ -172,7 +172,11 @@ async function fetchZ3Result(permalink: Permalink) {
     }
 }
 
-// Fetch generated assignment (extract assertions and code without assertions)
+/**
+ * Fetches the generated assignment template from the backend for the given permalink.
+ * Backend returns {assertions: string, code_without_assertions: string}.
+ * @param permalink Permalink identifier of the teacher reference
+ */
 async function fetchGenerateAssignment(permalink: Permalink) {
     let url = `/smt/smt/generate-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
     try {
@@ -183,6 +187,11 @@ async function fetchGenerateAssignment(permalink: Permalink) {
     }
 }
 
+/**
+ * Fetches the assessment results for the given permalink, which includes soundness, completeness and equivalence information.
+ * Backend returns {soundness: {result: string, model: string}, completeness: {result: string, model: string}, equivalence: bool}.
+ * @param permalink Permalink identifier of the student solution with information about teacher reference
+ */
 async function fetchAssessAssignment(permalink: Permalink) {
     let url = `/smt/smt/assess-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
     try {
@@ -193,6 +202,11 @@ async function fetchAssessAssignment(permalink: Permalink) {
     }
 }
 
+/**
+ * Validates the syntax of the SMT code before executing it on the server.
+ * This is to catch syntax errors early and provide better feedback to the user.
+ * @param permalink Permalink identifier for the SMT code to be checked
+ */
 async function validateSmtSyntax(permalink: Permalink) {
     try {
         const res = await fetchZ3Result(permalink);
@@ -553,6 +567,12 @@ async function executeIterateModels() {
     jotaiStore.set(isExecutingAtom, false);
 }
 
+/**
+ * Executed when the student presses on the RUN button with 'Assess Assignment' selected.
+ * It saves the code that the student wrote along with the corresponding teacher reference in the database,
+ * so that it can be retrieved and evaluated by the backend.
+ * Detailed feedback according to the results is given to the student in the output field.
+ */
 async function executeAssessAssignment() {
     const editorValue = jotaiStore.get(editorValueAtom);
     const referenceSpec = jotaiStore.get(assignmentAssessmentReferenceSpecAtom);
@@ -572,8 +592,8 @@ async function executeAssessAssignment() {
         if (response && response.data) {
             jotaiStore.set(permalinkAtom, response.data);
         } else {
-            // Defensive: if saving failed or backend returned unexpected payload,
-            // avoid continuing and surface a user friendly message.
+            // If saving failed or backend returned unexpected payload,
+            // avoid continuing and show a user-friendly message.
             jotaiStore.set(
                 outputAtom,
                 `; Unable to save specifications before assessment. Backend did not return a permalink.`
@@ -639,6 +659,13 @@ async function executeAssessAssignment() {
     return;
 }
 
+/**
+ * Executed when the teacher presses the RUN button with 'Generate Assignment' selected.
+ * It saves the reference code in the database, where it can be retrieved by the backend to generate
+ * an assignment template without the assertions.
+ * The final assignment template and the extracted assertions are shown to the teacher in the output field.
+ * A new window containing the assignment template is opened.
+ */
 async function executeGenerateAssignment() {
     const referenceSpec = jotaiStore.get(assignmentAssessmentReferenceSpecAtom);
     const language = jotaiStore.get(languageAtom);

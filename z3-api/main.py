@@ -82,6 +82,13 @@ def get_formula(assertions):
 
 
 def check_soundness(code, assertions_student, assertions_teacher):
+    """
+    Using the variable declarations from the template, makes a soundness check of the student solution
+    against the teacher reference.
+    code -- Code from the template, which provides the necessary declarations
+    assertions_student -- Assertions extracted from the student solution
+    assertions_teacher -- Assertions extracted from the teacher reference
+    """
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
 
@@ -100,6 +107,13 @@ def check_soundness(code, assertions_student, assertions_teacher):
 
 
 def check_completeness(code, assertions_student, assertions_teacher):
+    """
+    Using the variable declarations from the template, makes a completeness check of the student solution
+    against the teacher reference.
+    code -- Code from the template, which provides the necessary declarations
+    assertions_student -- Assertions extracted from the student solution
+    assertions_teacher -- Assertions extracted from the teacher reference
+    """
     logic = get_logic_from_smt2(code)
     solver = SolverFor(logic) if logic else Solver()
 
@@ -305,6 +319,12 @@ def get_next_model_from_cache(specId: str, p: str):
 
 @app.get("/smt/assess-assignment/", response_model=None)
 def assess_assignment(check: str, p: str):
+    """
+    Fetches the student solution along with its corresponding reference from the database
+    and performs soundness, completeness and equivalence checks.
+    check -- The tool for which the assessment is being done (e.g., SMT)
+    p -- The permalink identifier for the student's solution and reference
+    """
     code = ''
     teacher_reference = ''
     try:
@@ -317,6 +337,7 @@ def assess_assignment(check: str, p: str):
     except Exception:
         raise HTTPException(status_code=404, detail="Permalink not found")
 
+    # Determine logic from code to create solvers, which extract assertions from the code
     logic = get_logic_from_smt2(teacher_reference)
     solver_teacher = SolverFor(logic) if logic else Solver()
     solver_teacher.from_string(teacher_reference)
@@ -327,6 +348,7 @@ def assess_assignment(check: str, p: str):
     solver_student.from_string(code)
     assertions_student = solver_student.assertions()
 
+    # Three checks that are used to give feedback to students
     sound = check_soundness(code, assertions_student, assertions_teacher)
     complete = check_completeness(code, assertions_student,  assertions_teacher)
     equivalence = True if sound['result'] == 'unsat' and complete['result'] == 'unsat' else False
@@ -336,6 +358,12 @@ def assess_assignment(check: str, p: str):
 
 @app.get("/smt/generate-assignment/", response_model=None)
 def generate_assignment(check: str, p: str):
+    """
+    Fetches the teacher reference from the database, extracts the written assertions and generates the assignment
+    template without assertions for the students.
+    check -- The tool for which the assessment is being done (e.g., SMT)
+    p -- The permalink identifier for the student's solution and reference
+    """
     code = get_code_by_permalink(check, p)
     try:
         # Determine logic from the script
@@ -352,6 +380,7 @@ def generate_assignment(check: str, p: str):
             for a in z3_assertions
         ]
 
+        # String manipulation and parsing to remove all assertions from the code
         lines_no_assertions = []
         stack = 0
         is_skipping = False
