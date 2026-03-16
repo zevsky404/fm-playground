@@ -376,8 +376,6 @@ def generate_assignment(check: str, p: str):
 
         code_no_assertions = "\n".join(l for l in lines_no_assertions if l.strip())
 
-
-
         try:
             if assertions:
                 log_to_db(p, json.dumps({"analysis": "generate_assignment", "extracted_assertions_count": len(assertions)}))
