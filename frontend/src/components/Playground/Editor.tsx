@@ -17,8 +17,6 @@ import {
 } from '@/atoms';
 import { fmpConfig, languageConfigMap } from '@/ToolMaps';
 import '@/assets/style/Playground.css';
-import './HiddenAssessmentConfig.tsx';
-import HiddenAssessmentConfig from '@/components/Playground/HiddenAssessmentConfig.tsx';
 
 interface BasicCodeEditorProps {
     height: string;
@@ -256,7 +254,6 @@ const CodeEditor: React.FC<BasicCodeEditorProps> = (props: BasicCodeEditorProps)
                 onMount={handleEditorDidMount}
                 onChange={handleCodeChange}
             />
-            <HiddenAssessmentConfig teacherReference={"> 5 x"} studentSolution={editorValue}/>
         </div>
     );
 };

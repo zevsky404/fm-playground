@@ -19,7 +19,7 @@ import {
     originalCodeAtom,
     diffComparisonCodeAtom,
     diffComparisonHistoryIdAtom,
-    assignmentAssessmentReferenceSpecAtom, jotaiStore
+    jotaiStore,
 } from '@/atoms';
 import InputArea from '@/components/Playground/InputArea';
 import OutputArea from '@/components/Playground//OutputArea';
@@ -51,7 +51,6 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
     const [, setDiffComparisonHistoryId] = useAtom(diffComparisonHistoryIdAtom); // contains the history ID of the comparison code.
     const [errorMessage, setErrorMessage] = useState<string | null>(null); // contains the error messages from the API.
     const [isErrorMessageModalOpen, setIsErrorMessageModalOpen] = useState(false); // contains the state of the message modal.
-    const [,setReferenceSpec] = useAtom(assignmentAssessmentReferenceSpecAtom);
 
     /**
      * Load the code and language from the URL.
