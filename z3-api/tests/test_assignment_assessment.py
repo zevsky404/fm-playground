@@ -65,9 +65,5 @@ def test_functionalities():
 
         print(f"✓ Test {test_id} passed")
 
-
-
-
-
 if __name__ == '__main__':
     test_functionalities()

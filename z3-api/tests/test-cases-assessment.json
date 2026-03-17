@@ -88,10 +88,10 @@
       "test-case-name": "Initial Example (sound and not complete)",
       "teacher-reference" : "(declare-const h Int)\n(declare-const e Int)\n(declare-const l Int)\n(declare-const o Int)\n(declare-const w Int)\n(declare-const r Int)\n(declare-const d Int)\n\n(declare-const result Int)  \n\n(assert \n    (and \n        (= \n            result \n            (+ h e l l o) \n                \n        )\n        (= \n            result \n            (+ w o r l d)\n                \n        )\n        (= \n            result\n            22\n        )\n        (and \n                (distinct h e l o w r d) \n                (< 0 h) \n                (< 0 e)\n                (< 0 l) \n                (< 0 o) \n                (< 0 w) \n                (< 0 r) \n                (< 0 d)\n                (> 10 h)\n                (> 10 e)\n                (> 10 l)\n                (> 10 o)\n                (> 10 w)\n                (> 10 r)\n                (> 10 d)\n        )\n    )\n)\n\n(check-sat)\n(get-model)",
       "student-solution" : "(declare-const h Int)\n    (declare-const e Int)\n    (declare-const l Int)\n    (declare-const o Int)\n    (declare-const w Int)\n    (declare-const r Int)\n    (declare-const d Int)\n    \n    (declare-const result Int)  \n    (assert (= result (+ h e l l o w o r l d)))\n    (check-sat)\n    (get-model)",
-      "sound" : ,
-      "complete" : ,
+      "sound" : false,
+      "complete" : false,
       "error" : false,
-      "reference-no-assertions" : "(declare-const h Int)\n(declare-const e Int)\n(declare-const l Int)\n(declare-const o Int)\n(declare-const w Int)\n(declare-const r Int)\n(declare-const d Int)\n\n(declare-const result Int)  \n(check-sat)\n(get-model)"
+      "reference-no-assertions" : "(declare-const h Int)\n(declare-const e Int)\n(declare-const l Int)\n(declare-const o Int)\n(declare-const w Int)\n(declare-const r Int)\n(declare-const d Int)\n(declare-const result Int)\n(check-sat)\n(get-model)"
     },
     {
       "test-id" : 10,
