@@ -146,7 +146,7 @@ def extract_assertions(code):
     ]
     return assertions
 
-
+# function adapted from Gemini 3
 def remove_assertions_from_reference(code):
     # String manipulation and parsing to remove all assertions from the code
     lines_no_assertions = []

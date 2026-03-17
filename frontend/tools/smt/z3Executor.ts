@@ -714,6 +714,7 @@ async function executeGenerateAssignment() {
 
         jotaiStore.set(outputAtom, outMsg);
         jotaiStore.set(smtModelAtom, { result: outMsg });
+        //code adapted from ChatGPT-5.3
         const permalink = jotaiStore.get(permalinkAtom);
         window.history.replaceState(
             null,
@@ -723,6 +724,7 @@ async function executeGenerateAssignment() {
 
         localStorage.setItem("generatedAssignment", codeWithoutAssertions);
         window.open(`http://localhost:5173/`, "_blank");
+        //adaptation ends here
 
     } catch (error) {
         jotaiStore.set(

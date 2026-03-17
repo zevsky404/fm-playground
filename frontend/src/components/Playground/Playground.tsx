@@ -115,6 +115,7 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
 
     /**
      * Load generated assignment code, save and create permalink
+     * function adapted from ChatGPT-5.3
      */
     useEffect(() => {
         const generated = localStorage.getItem("generatedAssignment");

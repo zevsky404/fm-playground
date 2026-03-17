@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { smtCliOptionsAtom, isDarkThemeAtom } from '@/atoms';
 
 const SmtCheckOptions = () => {
+    //code adapted from ChatGPT-5.3
     const location = useLocation();
     const isTeacherPage = location.pathname === '/teacher';
     const baseOptions = [
@@ -12,10 +13,11 @@ const SmtCheckOptions = () => {
         { value: 'explain-redundancy', label: 'Explain Redundancy' },
         { value: 'iterate-models', label: 'Iterate Models' },
     ];
-    const teacherOption =  { value: 'generate-assignment', label: 'Generate Assignment' };
+    const teacherOption = { value: 'generate-assignment', label: 'Generate Assignment' };
     const studentOption = { value: 'assess-assignment', label: 'Assess Assignment' };
 
     const options = isTeacherPage ? [...baseOptions, teacherOption] : [...baseOptions, studentOption];
+    //adaptation ends here
 
     const [smtCheckOption, setSmtCheckOption] = useAtom(smtCliOptionsAtom);
     const [isDarkTheme] = useAtom(isDarkThemeAtom);
