@@ -628,19 +628,19 @@ async function executeAssessAssignment() {
 
         if (result['soundness']['result'] === "sat" && result['completeness']['result'] == "sat" ){
             jotaiStore.set(isExecutingAtom, false);
-            jotaiStore.set(outputAtom, 'Student solution is not sound and not complete');
+            jotaiStore.set(outputAtom, `The solution is not sound (too permissive in some areas) and not complete (too restrictive in others).\n\nIt allows invalid models such as: \n${result['soundness']['model']} \n\nwhile missing valid models like: \n${result['completeness']['model']}.`);
             return;
         }
 
         if (result['soundness']['result'] != "unsat") {
             jotaiStore.set(isExecutingAtom, false);
-            jotaiStore.set(outputAtom, `Student solution is not sound. It allows more models than the reference.\nA example that would not be allowed by the reference would be: ${result['soundness']['model']}`);
+            jotaiStore.set(outputAtom, `The solution is not sound. It allows more models than the reference.\nA example that is accepted by your solution that would not be allowed by the reference would be: \n${result['soundness']['model']}`);
             return;
         }
 
         if (result['completeness']['result'] != "unsat") {
             jotaiStore.set(isExecutingAtom, false);
-            jotaiStore.set(outputAtom, `Student solution is not complete. It allows less models than the reference.\nA example that would be allowed by the reference would be: ${result['completeness']['model']}`);
+            jotaiStore.set(outputAtom, `The solution is incomplete. It is more restrictive than the reference and fails to include valid solutions.\nFor example, the reference allows the following model, which your soulution rejects: \n${result['completeness']['model']}.`);
             return;
         }
 
