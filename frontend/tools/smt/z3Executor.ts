@@ -178,6 +178,7 @@ async function fetchZ3Result(permalink: Permalink) {
  * @param permalink Permalink identifier of the teacher reference
  */
 async function fetchGenerateAssignment(permalink: Permalink) {
+    // Written by Copilot
     let url = `/smt/smt/generate-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
     try {
         const response = await axios.get(url);
@@ -193,6 +194,7 @@ async function fetchGenerateAssignment(permalink: Permalink) {
  * @param permalink Permalink identifier of the student solution with information about teacher reference
  */
 async function fetchAssessAssignment(permalink: Permalink) {
+    // Written by Copilot
     let url = `/smt/smt/assess-assignment/?check=${permalink.check}&p=${permalink.permalink}`;
     try {
         const response = await axios.get(url);
@@ -697,6 +699,7 @@ async function executeGenerateAssignment() {
             return;
         }
         // Call the generate-assignment endpoint which returns assertions + code without assertions
+        // Added by Copilot
         const res = await fetchGenerateAssignment(response?.data);
 
         const assertions: string[] = res.assertions ?? [];
