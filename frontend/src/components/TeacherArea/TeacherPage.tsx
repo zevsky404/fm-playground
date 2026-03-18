@@ -107,16 +107,10 @@ const Playground: React.FC<PlaygroundProps> = ({ editorTheme }) => {
      */
     useEffect(() => {
 
-        // Do not modify URL when inside teacher mode
-        if (location.pathname === "/teacher") return;
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const checkParam = "SMT";
-
         navigate(
             permalink.permalink
-                ? `/?check=${permalink.check}&p=${permalink.permalink}`
-                : `/?check=${checkParam}`
+                ? `/teacher?check=${permalink.check}&p=${permalink.permalink}`
+                : `/teacher`
         );
 
     }, [permalink, navigate, location.pathname]);
